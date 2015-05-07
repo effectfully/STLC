@@ -4,7 +4,7 @@ It's a Hindley-Milner type system in Agda. We have untyped terms:
 
 ```
 data Syntax n : Set where
-  varˢ : Fin n -> Syntax n 
+  varˢ : Fin n -> Syntax n
   ƛˢ_  : Syntax (suc n) -> Syntax n
   _·_  : Syntax n -> Syntax n -> Syntax n
 ```

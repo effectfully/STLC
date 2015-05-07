@@ -6,7 +6,7 @@ open import Data.Fin hiding (_+_)
 infixl 4 _·_
 
 data Syntax n : Set where
-  varˢ : Fin n -> Syntax n 
+  varˢ : Fin n -> Syntax n
   ƛˢ_  : Syntax (suc n) -> Syntax n
   _·_  : Syntax n -> Syntax n -> Syntax n
 
