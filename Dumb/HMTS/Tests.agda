@@ -27,8 +27,8 @@ applicator = term (2 # λ a b → a · b)
 applicator' : Term ((b ⇒ a) ⇒ b ⇒ a)
 applicator' = term (2 # λ a b → a · b)
 
-applicator-spelialized : Term ((a ⇒ a) ⇒ a ⇒ a)
-applicator-spelialized = term (2 # λ a b → a · b)
+applicator-speсialized : Term ((a ⇒ a) ⇒ a ⇒ a)
+applicator-speсialized = term (2 # λ a b → a · b)
 
 applicator-generic : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
 applicator-generic = term (2 # λ a b → a · b)
