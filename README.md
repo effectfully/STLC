@@ -9,8 +9,8 @@ data Syntax n : Set where
   _·_  : Syntax n -> Syntax n -> Syntax n
 ```
 
-typed terms (this version is from the [/Direct/HMTS/Terms](https://github.com/effectfully/HMTS-in-Agda/tree/master/Direct/HMTS/Terms) module;
-the version from the [/Dumb/HMTS/Terms](https://github.com/effectfully/HMTS-in-Agda/tree/master/Dumb/HMTS/Terms) module uses lists instead of vectors):
+typed terms (this version is from the [/Direct/HMTS/Terms](https://github.com/effectfully/HMTS-in-Agda/tree/master/Direct/HMTS/Terms.agda) module;
+the version from the [/Dumb/HMTS/Terms](https://github.com/effectfully/HMTS-in-Agda/tree/master/Dumb/HMTS/Terms.agda) module uses lists instead of vectors):
 
 ```
 data _⊢_ {n} (Γ : Con n) : Type -> Set where
