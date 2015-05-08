@@ -9,8 +9,8 @@ data Syntax n : Set where
   _·_  : Syntax n -> Syntax n -> Syntax n
 ```
 
-typed terms (this version is from the `/Direct/HMTS/Terms` module;
-the version from the `/Dumb/HMTS/Terms` module uses lists instead of vectors):
+typed terms (this version is from the [/Direct/HMTS/Terms](https://github.com/effectfully/HMTS-in-Agda/tree/master/Direct/HMTS/Terms) module;
+the version from the [/Dumb/HMTS/Terms](https://github.com/effectfully/HMTS-in-Agda/tree/master/Dumb/HMTS/Terms) module uses lists instead of vectors):
 
 ```
 data _⊢_ {n} (Γ : Con n) : Type -> Set where
@@ -39,3 +39,4 @@ M : ∀ {n} -> ℕ -> (Γ : Con n) -> Syntax n -> (σ : Type)
 
 I.e. `M` receives a context, a term and a type, and checks, whether there is a substitution,
 that allows to typify the term in this context and with this type, after the substitution is applied to them.
+Soundness of `M` is proved in the [Properties](https://github.com/effectfully/HMTS-in-Agda/tree/master/Direct/HMTS/Properties.agda) module.

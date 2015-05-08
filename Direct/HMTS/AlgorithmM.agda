@@ -40,9 +40,15 @@ lam : ∀ {new n σ} {Γ : Con n} Φ Ψ
     -> apply Ψ σ ≡ apply Ψ (Var new ⇒ Var (next new))
     -> map-apply Φ (map-apply Ψ (Γ ▻ Var new)) ⊢ apply Φ (apply Ψ (Var (next new)))
     -> map-apply Φ (map-apply Ψ Γ) ⊢ apply Φ (apply Ψ σ)
-lam {new} {Γ = Γ} Φ Ψ p b
-  rewrite ▻-expand² Φ Ψ Γ (Var new)
-  | p |   ⇒-expand² Φ Ψ (Var new) (Var (suc new)) = ƛ b
+lam {new} {Γ = Γ} Φ Ψ p b rewrite ▻-expand² Φ Ψ Γ (Var new) =
+  coerceBy (trans (sym (⇒-expand² Φ Ψ (Var new) (Var (next new)))) (sym (cong (apply Φ) p))) (ƛ b)
+
+  -- It was
+
+  -- rewrite ▻-expand² Φ Ψ Γ (Var new)
+  -- | p   | ⇒-expand² Φ Ψ (Var new) (Var (next new)) = ƛ b
+
+  -- but this complicates the soundness proof a lot.
 
 M : ∀ {n} -> ℕ -> (Γ : Con n) -> Syntax n -> (σ : Type)
   -> Maybe (ℕ × ∃ λ Ψ -> map-apply Ψ Γ ⊢ apply Ψ σ)
@@ -61,4 +67,7 @@ M new Γ (fˢ · xˢ) σ =
   just (new'' , branch Φ Ψ , coerceBy (⇒-expand² Φ Ψ (Var new) σ) (specialize Φ f) ∙ x)
   }}
 
-term = λ eˢ -> M 1 [] eˢ (Var 0) >>=⊤ λ{ (_ , _ , e) -> alpha e }
+runM : Syntax⁽⁾ -> Maybe (∃ λ Ψ -> map-apply Ψ [] ⊢ apply Ψ (Var 0))
+runM eˢ = proj₂ <$> M 1 [] eˢ (Var 0)
+
+term = λ eˢ -> runM eˢ >>=⊤ λ{ (_ , e) -> alpha e }

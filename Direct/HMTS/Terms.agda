@@ -8,6 +8,7 @@ open import Data.List
 open import Data.Vec  as Vec hiding (fromList)
 
 open import HMTS.Prelude
+open import HMTS.Syntax
 open import HMTS.Types
 open import HMTS.Substitutions
 
@@ -20,6 +21,11 @@ data _⊢_ {n} (Γ : Con n) : Type -> Set where
 
 Term : Type -> Set
 Term σ = [] ⊢ σ
+
+erase : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> Syntax n
+erase (var v) = varˢ (∈-to-Fin v)
+erase (ƛ b)   = ƛˢ (erase b)
+erase (f ∙ x) = erase f · erase x
 
 coerceBy : ∀ {n σ τ} {Γ : Con n} -> σ ≡ τ -> Γ ⊢ σ -> Γ ⊢ τ
 coerceBy refl = id

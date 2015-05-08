@@ -68,9 +68,7 @@ mutual
   ⇒-expand (branch Φ Ψ) σ τ = ⇒-expand² Φ Ψ σ τ
 
   ⇒-expand² : ∀ Φ Ψ σ τ -> apply Φ (apply Ψ (σ ⇒ τ)) ≡ (apply Φ (apply Ψ σ) ⇒ apply Φ (apply Ψ τ))
-  ⇒-expand² Φ Ψ σ τ
-    rewrite ⇒-expand Ψ  σ           τ
-    |       ⇒-expand Φ (apply Ψ σ) (apply Ψ τ) = refl
+  ⇒-expand² Φ Ψ σ τ rewrite ⇒-expand Ψ σ τ = ⇒-expand Φ (apply Ψ σ) (apply Ψ τ)
 
 mutual
   ▻-expand : ∀ {n} Ψ (Γ : Con n) σ
@@ -80,14 +78,10 @@ mutual
 
   ▻-expand² : ∀ {n} Φ Ψ (Γ : Con n) σ
             -> map-apply Φ (map-apply Ψ (Γ ▻ σ)) ≡ map-apply Φ (map-apply Ψ Γ) ▻ apply Φ (apply Ψ σ)
-  ▻-expand² Φ Ψ Γ σ
-    rewrite ▻-expand Ψ  Γ               σ
-    |       ▻-expand Φ (map-apply Ψ Γ) (apply Ψ σ) = refl
+  ▻-expand² Φ Ψ Γ σ rewrite ▻-expand Ψ Γ σ = ▻-expand Φ (map-apply Ψ Γ) (apply Ψ σ)
 
 compose : ∀ {σ σ' τ τ'} Φ Ψ
         -> apply Ψ  σ                ≡ apply Ψ  σ'
         -> apply Φ (apply Ψ  τ)      ≡ apply Φ (apply Ψ  τ')
         -> apply Φ (apply Ψ (σ ⇒ τ)) ≡ apply Φ (apply Ψ (σ' ⇒ τ'))
-compose {σ} {σ'} {τ} {τ'} Φ Ψ p q
-  rewrite ⇒-expand² Φ Ψ σ  τ
-  |       ⇒-expand² Φ Ψ σ' τ' | p | q = refl
+compose {σ} {σ'} {τ} {τ'} Φ Ψ p q rewrite ⇒-expand² Φ Ψ σ τ | ⇒-expand² Φ Ψ σ' τ' | p | q = refl
