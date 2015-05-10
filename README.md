@@ -1,6 +1,6 @@
 # HMTS-in-Agda
 
-It's a Hindley-Milner type system in Agda. We have untyped terms:
+It's a Hindley-Milner (some day) type system in Agda. We have untyped terms:
 
 ```
 data Syntax n : Set where
