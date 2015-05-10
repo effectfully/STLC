@@ -39,4 +39,4 @@ M : ∀ {n} -> ℕ -> (Γ : Con n) -> Syntax n -> (σ : Type)
 
 I.e. `M` receives a context, a term and a type, and checks, whether there is a substitution,
 that allows to typify the term in this context and with this type, after the substitution is applied to them.
-Soundness of `M` is proved in the [Properties](https://github.com/effectfully/HMTS-in-Agda/tree/master/Direct/HMTS/Properties.agda) module.
+Soundness of `M` is proved in the [/Direct/HMTS/Properties](https://github.com/effectfully/HMTS-in-Agda/tree/master/Direct/HMTS/Properties.agda) module.
