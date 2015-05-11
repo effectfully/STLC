@@ -1,4 +1,4 @@
-module HMTS.AlgorithmM where
+module HMTS.AlgorithmM.Main where
 
 open import Function
 open import Relation.Nullary
@@ -9,19 +9,19 @@ open import Data.Maybe
 open import Data.Product
 open import Data.Vec  as Vec hiding (_>>=_)
 
-open import HMTS.Prelude
-open import HMTS.Syntax
-open import HMTS.Types
-open import HMTS.Substitutions
-open import HMTS.Terms
-open import HMTS.Alpha using (alpha)
+open import HMTS.Utilities.Prelude
+open import HMTS.Data.Syntax
+open import HMTS.Data.Type
+open import HMTS.AlgorithmM.Substitution
+open import HMTS.AlgorithmM.Term
 
 subst : ∀ i τ -> Maybe (∃ λ Ψ -> apply Ψ (Var i) ≡ apply Ψ τ)
-subst i σ = case i ∈? ftv-all σ of λ
+subst i σ = case ∈? _≟_ i (ftv-all σ) of λ
   { (yes _) -> nothing
   ; (no  p) -> just (leaf (just (i , σ)) , subst-apply i σ p)
   }
 
+-- Yep, Conor McBride's unification.
 {-# TERMINATING #-}
 U : ∀ σ τ -> Maybe (∃ λ Ψ -> apply Ψ σ ≡ apply Ψ τ)
 U (Var i) (Var j)   = case i ≟ j of λ
@@ -36,38 +36,37 @@ U (σ ⇒ τ) (σ' ⇒ τ') =
   just (branch Φ Ψ , compose Φ Ψ p q)
   }}
 
-lam : ∀ {new n σ} {Γ : Con n} Φ Ψ
+lam : ∀ {new n σ} {Γ : Conᵛ n} Φ Ψ
     -> apply Ψ σ ≡ apply Ψ (Var new ⇒ Var (next new))
-    -> map-apply Φ (map-apply Ψ (Γ ▻ Var new)) ⊢ apply Φ (apply Ψ (Var (next new)))
+    -> map-apply Φ (map-apply Ψ (Γ ▻ᵛ Var new)) ⊢ apply Φ (apply Ψ (Var (next new)))
     -> map-apply Φ (map-apply Ψ Γ) ⊢ apply Φ (apply Ψ σ)
-lam {new} {Γ = Γ} Φ Ψ p b rewrite ▻-expand² Φ Ψ Γ (Var new) =
-  coerceBy (trans (sym (⇒-expand² Φ Ψ (Var new) (Var (next new)))) (sym (cong (apply Φ) p))) (ƛ b)
+lam {new} {Γ = Γ} Φ Ψ p b rewrite ▻ᵛ-expand² Φ Ψ Γ (Var new) =
+  coerceBy
+    (trans (sym (⇒-expand² Φ Ψ (Var new) (Var (next new))))
+           (sym (cong (apply Φ) p)))
+    (ƛ b)
 
-  -- It was
-
-  -- rewrite ▻-expand² Φ Ψ Γ (Var new)
-  -- | p   | ⇒-expand² Φ Ψ (Var new) (Var (next new)) = ƛ b
-
-  -- but this complicates the soundness proof a lot.
-
-M : ∀ {n} -> ℕ -> (Γ : Con n) -> Syntax n -> (σ : Type)
+M : ∀ {n} -> ℕ -> (Γ : Conᵛ n) -> Syntax n -> (σ : Type)
   -> Maybe (ℕ × ∃ λ Ψ -> map-apply Ψ Γ ⊢ apply Ψ σ)
 M new Γ (varˢ i)  σ =
-  U σ (Vec.lookup i Γ) >>= λ{ (Ψ , p) ->
+  U σ (Vec.lookup i Γ)
+    >>= λ{ (Ψ , p) ->
   just (new , Ψ , coerceBy (sym p) (specialize Ψ (var (lookup-in i Γ))))
   }
 M new Γ (ƛˢ bˢ)   σ =
-  U σ (Var new ⇒ Var (next new))                                                >>= λ{ (Ψ , p)        ->
-  M (next (next new)) (map-apply Ψ (Var new ∷ Γ)) bˢ (apply Ψ (Var (next new))) >>= λ{ (new' , Φ , b) ->
+  U σ (Var new ⇒ Var (next new))
+    >>= λ{ (Ψ , p)        ->
+  M (next (next new)) (map-apply Ψ (Var new ∷ Γ)) bˢ (apply Ψ (Var (next new)))
+    >>= λ{ (new' , Φ , b) ->
   just (new' , branch Φ Ψ , lam Φ Ψ p b)
   }}
 M new Γ (fˢ · xˢ) σ =
-  M (next new)  Γ              fˢ (Var new ⇒ σ)       >>= λ{ (new'  , Ψ , f) ->
-  M  new'      (map-apply Ψ Γ) xˢ (apply Ψ (Var new)) >>= λ{ (new'' , Φ , x) ->
+  M (next new)  Γ              fˢ (Var new ⇒ σ)
+    >>= λ{ (new'  , Ψ , f) ->
+  M  new'      (map-apply Ψ Γ) xˢ (apply Ψ (Var new))
+    >>= λ{ (new'' , Φ , x) ->
   just (new'' , branch Φ Ψ , coerceBy (⇒-expand² Φ Ψ (Var new) σ) (specialize Φ f) ∙ x)
   }}
 
 runM : Syntax⁽⁾ -> Maybe (∃ λ Ψ -> map-apply Ψ [] ⊢ apply Ψ (Var 0))
 runM eˢ = proj₂ <$> M 1 [] eˢ (Var 0)
-
-term = λ eˢ -> runM eˢ >>=⊤ λ{ (_ , e) -> alpha e }

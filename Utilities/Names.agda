@@ -1,8 +1,8 @@
-module HMTS.Names where
+module HMTS.Utilities.Names where
 
 open import Data.Nat
 
-open import HMTS.Types
+open import HMTS.Data.Type
 
 a = Var 0
 b = Var 1

@@ -1,6 +1,4 @@
-module HMTS.Tests where
-
-open import Data.Unit
+module HMTS.Tests.Combs where
 
 open import HMTS.Main
 
@@ -9,7 +7,7 @@ open import HMTS.Main
 I : Pure
 I = pure (1 # λ x → x)
 
-Iᵀ : Term (a ⇒ a)
+Iᵀ : _
 Iᵀ = term I
 
 Iᵀ' : Term (a ⇒ a)
@@ -27,7 +25,7 @@ applicator = term (2 # λ a b → a · b)
 applicator' : Term ((b ⇒ a) ⇒ b ⇒ a)
 applicator' = term (2 # λ a b → a · b)
 
-applicator-speсialized : Term ((a ⇒ a) ⇒ a ⇒ a)
+applicator-speсialized : Term (((b ⇒ c) ⇒ a) ⇒ (b ⇒ c) ⇒ a)
 applicator-speсialized = term (2 # λ a b → a · b)
 
 applicator-generic : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
@@ -37,7 +35,7 @@ applicator-generic-specialized : ∀ {a} -> Term ((a ⇒ a) ⇒ a ⇒ a)
 applicator-generic-specialized = applicator-generic
 
 cardinal : Term ((a ⇒ b ⇒ c) ⇒ b ⇒ a ⇒ c)
-cardinal = term (3 # λ a b c -> a · c · b)
+cardinal = term (3 # λ a b c → a · c · b)
 
 owl : Term (((a ⇒ b) ⇒ a) ⇒ (a ⇒ b) ⇒ b)
 owl = term (2 # λ a b → b · (a · b))

@@ -1,4 +1,4 @@
-module HMTS.Bind where
+module HMTS.Utilities.Bind where
 
 -- This is a generalization of Conor McBride's cool trick:
 -- https://personal.cis.strath.ac.uk/conor.mcbride/fooling/Jigger.agda
@@ -7,7 +7,7 @@ open import Function
 open import Data.Nat
 open import Data.Fin hiding (_+_; #_)
 
-open import HMTS.Syntax
+open import HMTS.Data.Syntax
 
 shift : ∀ {m} n -> Fin (suc (n + m))
 shift  0      = fromℕ _

@@ -1,9 +1,9 @@
-module HMTS.Syntax where
+module HMTS.Data.Syntax where
 
 open import Data.Nat
 open import Data.Fin hiding (_+_)
 
-infixl 4 _·_
+infixl 5 _·_
 
 data Syntax n : Set where
   varˢ : Fin n -> Syntax n

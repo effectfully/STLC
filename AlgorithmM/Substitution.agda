@@ -1,4 +1,4 @@
-module HMTS.Substitutions where
+module HMTS.AlgorithmM.Substitution where
 
 open import Function
 open import Relation.Nullary
@@ -8,13 +8,10 @@ open import Data.Bool hiding (_≟_)
 open import Data.Nat  as Nat
 open import Data.Maybe
 open import Data.Product
-open import Data.List
-open import Data.List.Any
-open Membership-≡
-open import Data.Vec  as Vec hiding (_>>=_; fromList)
+open import Data.Vec  as Vec hiding (_>>=_)
 
-open import HMTS.Prelude
-open import HMTS.Types
+open import HMTS.Utilities.Prelude
+open import HMTS.Data.Type
 
 data Tree {α} (A : Set α) : Set α where
   leaf   : A -> Tree A
@@ -25,10 +22,6 @@ Atom = Maybe (ℕ × Type)
 
 Subst : Set
 Subst = Tree Atom
-
-fromList : List (ℕ × Type) -> Subst
-fromList  []      = leaf nothing
-fromList (a ∷ as) = branch (fromList as) (leaf (just a)) 
 
 subst-Var : ℕ -> Atom -> Type
 subst-Var i ψ = maybe′ id (Var i)
@@ -45,7 +38,7 @@ foldSubst f (branch Φ Ψ) x = foldSubst f Φ (foldSubst f Ψ x)
 apply : Subst -> Type -> Type
 apply = foldSubst atom-apply
 
-map-apply : ∀ {n} -> Subst -> Con n -> Con n
+map-apply : ∀ {n} -> Subst -> Conᵛ n -> Conᵛ n
 map-apply = foldSubst (Vec.map ∘ atom-apply)
 
 subst-self : ∀ i σ -> subst-Var i (just (i , σ)) ≡ σ
@@ -53,13 +46,14 @@ subst-self i σ rewrite ≟-refl i = refl
 
 apply-self : ∀ {τ} i σ -> i ∉ ftv-all σ -> atom-apply (just (i , τ)) σ ≡ σ
 apply-self i (Var j) p with j ≟ i
-... | no  q = refl
-... | yes q = ⊥-elim (p (here (sym q)))
+... | no  q           = refl
+... | yes q rewrite q = ⊥-elim (p vz)
 apply-self i (σ ⇒ τ) p = cong₂ _⇒_
   (apply-self i σ (p ∘ ∈-++₁))
   (apply-self i τ (p ∘ ∈-++₂ (ftv-all σ)))
 
-subst-apply : ∀ i σ -> i ∉ ftv-all σ -> subst-Var i (just (i , σ)) ≡ atom-apply (just (i , σ)) σ
+subst-apply : ∀ i σ -> i ∉ ftv-all σ
+            -> subst-Var i (just (i , σ)) ≡ atom-apply (just (i , σ)) σ
 subst-apply i σ p rewrite subst-self i σ = sym (apply-self i σ p)
 
 mutual
@@ -67,21 +61,25 @@ mutual
   ⇒-expand (leaf ψ)     σ τ = refl
   ⇒-expand (branch Φ Ψ) σ τ = ⇒-expand² Φ Ψ σ τ
 
-  ⇒-expand² : ∀ Φ Ψ σ τ -> apply Φ (apply Ψ (σ ⇒ τ)) ≡ (apply Φ (apply Ψ σ) ⇒ apply Φ (apply Ψ τ))
+  ⇒-expand² : ∀ Φ Ψ σ τ
+            ->    apply Φ (apply Ψ (σ ⇒ τ))
+               ≡ (apply Φ (apply Ψ σ) ⇒ apply Φ (apply Ψ τ))
   ⇒-expand² Φ Ψ σ τ rewrite ⇒-expand Ψ σ τ = ⇒-expand Φ (apply Ψ σ) (apply Ψ τ)
 
 mutual
-  ▻-expand : ∀ {n} Ψ (Γ : Con n) σ
-           -> map-apply Ψ (Γ ▻ σ) ≡ map-apply Ψ Γ ▻ apply Ψ σ
-  ▻-expand (leaf   ψ)   Γ σ = refl
-  ▻-expand (branch Φ Ψ) Γ σ = ▻-expand² Φ Ψ Γ σ
+  ▻ᵛ-expand : ∀ {n} Ψ (Γ : Conᵛ n) σ
+           -> map-apply Ψ (Γ ▻ᵛ σ) ≡ map-apply Ψ Γ ▻ᵛ apply Ψ σ
+  ▻ᵛ-expand (leaf   ψ)   Γ σ = refl
+  ▻ᵛ-expand (branch Φ Ψ) Γ σ = ▻ᵛ-expand² Φ Ψ Γ σ
 
-  ▻-expand² : ∀ {n} Φ Ψ (Γ : Con n) σ
-            -> map-apply Φ (map-apply Ψ (Γ ▻ σ)) ≡ map-apply Φ (map-apply Ψ Γ) ▻ apply Φ (apply Ψ σ)
-  ▻-expand² Φ Ψ Γ σ rewrite ▻-expand Ψ Γ σ = ▻-expand Φ (map-apply Ψ Γ) (apply Ψ σ)
+  ▻ᵛ-expand² : ∀ {n} Φ Ψ (Γ : Conᵛ n) σ
+            ->   map-apply Φ (map-apply Ψ (Γ ▻ᵛ σ))
+               ≡ map-apply Φ (map-apply Ψ Γ) ▻ᵛ apply Φ (apply Ψ σ)
+  ▻ᵛ-expand² Φ Ψ Γ σ rewrite ▻ᵛ-expand Ψ Γ σ = ▻ᵛ-expand Φ (map-apply Ψ Γ) (apply Ψ σ)
 
 compose : ∀ {σ σ' τ τ'} Φ Ψ
         -> apply Ψ  σ                ≡ apply Ψ  σ'
         -> apply Φ (apply Ψ  τ)      ≡ apply Φ (apply Ψ  τ')
         -> apply Φ (apply Ψ (σ ⇒ τ)) ≡ apply Φ (apply Ψ (σ' ⇒ τ'))
-compose {σ} {σ'} {τ} {τ'} Φ Ψ p q rewrite ⇒-expand² Φ Ψ σ τ | ⇒-expand² Φ Ψ σ' τ' | p | q = refl
+compose {σ} {σ'} {τ} {τ'} Φ Ψ p q
+  rewrite ⇒-expand² Φ Ψ σ τ | ⇒-expand² Φ Ψ σ' τ' | p | q = refl

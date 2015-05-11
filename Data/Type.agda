@@ -1,30 +1,40 @@
-module HMTS.Types where
+module HMTS.Data.Type where
 
 open import Function
 open import Relation.Nullary
 open import Relation.Binary.PropositionalEquality
 open import Data.Nat
 open import Data.Maybe
-open import Data.List as List
-open import Data.Vec  hiding (_⊛_)
+open import Data.List
+open import Data.Vec  hiding (_⊛_; _++_)
 
-open import HMTS.Prelude
+open import HMTS.Utilities.Prelude
 
-infixr 1 _⇒_
+infixr 2 _⇒_
+infixl 5 _▻_ _▻▻_ _▻ᵛ_
 
 data Type : Set where
   Var  : ℕ -> Type
   _⇒_ : Type -> Type -> Type
 
-Con : ℕ -> Set
-Con = Vec Type
+Con : Set
+Con = List Type
 
-_▻_ : ∀ {n} -> Con n -> Type -> Con (suc n)
+_▻_ : Con -> Type -> Con
 Γ ▻ σ = σ ∷ Γ
+
+_▻▻_ : Con -> Con -> Con
+_▻▻_ = flip _++_
+
+Conᵛ : ℕ -> Set
+Conᵛ = Vec Type
+
+_▻ᵛ_ : ∀ {n} -> Conᵛ n -> Type -> Conᵛ (suc n)
+Γ ▻ᵛ σ = σ ∷ Γ
 
 ftv-all : Type -> List ℕ
 ftv-all (Var i) = i ∷ []
-ftv-all (σ ⇒ τ) = ftv-all σ List.++ ftv-all τ
+ftv-all (σ ⇒ τ) = ftv-all σ ++ ftv-all τ
 
 ftv : Type -> List ℕ
 ftv = nub ∘ ftv-all

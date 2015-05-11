@@ -1,4 +1,4 @@
-module HMTS.Properties where
+module HMTS.AlgorithmM.Properties where
 
 open import Relation.Binary.PropositionalEquality
 open import Data.Fin
@@ -6,29 +6,30 @@ open import Data.Maybe
 open import Data.Product
 open import Data.Vec as Vec
 
-open import HMTS.Prelude
-open import HMTS.Syntax
-open import HMTS.Types
-open import HMTS.Substitutions
-open import HMTS.Terms
-open import HMTS.AlgorithmM
+open import HMTS.Utilities.Prelude
+open import HMTS.Data.Syntax
+open import HMTS.Data.Type
+open import HMTS.AlgorithmM.Substitution
+open import HMTS.AlgorithmM.Term
+open import HMTS.AlgorithmM.Main
 
-erase-coerceBy : ∀ {n σ τ} {Γ : Con n} (p : σ ≡ τ) (e : Γ ⊢ σ)
+erase-coerceBy : ∀ {n σ τ} {Γ : Conᵛ n} (p : σ ≡ τ) (e : Γ ⊢ σ)
                -> erase (coerceBy p e) ≡ erase e
 erase-coerceBy refl e = refl
 
-∈-to-Fin∘atom-specialize-var : ∀ {n σ} {Γ : Con n} ψ (v : σ ∈ Γ)
-                             -> ∈-to-Fin (atom-specialize-var {ψ} v) ≡ ∈-to-Fin v
-∈-to-Fin∘atom-specialize-var ψ  here     = refl
-∈-to-Fin∘atom-specialize-var ψ (there v) = cong suc (∈-to-Fin∘atom-specialize-var ψ v)
+∈-to-Fin∘atom-specialize-var : ∀ {n σ} {Γ : Conᵛ n} ψ (v : σ ∈ᵛ Γ)
+                             -> ∈ᵛ-to-Fin (atom-specialize-var {ψ} v) ≡ ∈ᵛ-to-Fin v
+∈-to-Fin∘atom-specialize-var ψ  vz    = refl
+∈-to-Fin∘atom-specialize-var ψ (vs v) = cong suc (∈-to-Fin∘atom-specialize-var ψ v)
 
-erase-atom-specialize : ∀ {n σ} {Γ : Con n} ψ (e : Γ ⊢ σ)
+erase-atom-specialize : ∀ {n σ} {Γ : Conᵛ n} ψ (e : Γ ⊢ σ)
                       -> erase (atom-specialize {ψ} e) ≡ erase e
 erase-atom-specialize ψ (var v) = cong varˢ (∈-to-Fin∘atom-specialize-var ψ v)
 erase-atom-specialize ψ (ƛ b)   = cong ƛˢ_ (erase-atom-specialize ψ b)
-erase-atom-specialize ψ (f ∙ x) = cong₂ _·_ (erase-atom-specialize ψ f) (erase-atom-specialize ψ x)
+erase-atom-specialize ψ (f ∙ x) = cong₂ _·_
+  (erase-atom-specialize ψ f) (erase-atom-specialize ψ x)
 
-erase-specialize : ∀ {n σ} {Γ : Con n} Ψ (e : Γ ⊢ σ)
+erase-specialize : ∀ {n σ} {Γ : Conᵛ n} Ψ (e : Γ ⊢ σ)
                  -> erase (specialize Ψ e) ≡ erase e
 erase-specialize (leaf   ψ)   e = erase-atom-specialize ψ e
 erase-specialize (branch Φ Ψ) e
@@ -40,7 +41,7 @@ M-sound new Γ (varˢ i)  σ
 ... | nothing      = _
 ... | just (Ψ , p)
     rewrite erase-coerceBy (sym p) (specialize Ψ (var (lookup-in i Γ)))
-    |       erase-specialize Ψ (var (lookup-in i Γ)) | ∈-to-Fin∘lookup-in i Γ = refl
+    |       erase-specialize Ψ (var (lookup-in i Γ)) | ∈ᵛ-to-Fin∘lookup-in i Γ = refl
 M-sound new Γ (ƛˢ bˢ)   σ
     with U σ (Var new ⇒ Var (next new))
 ... | nothing      = _
@@ -49,8 +50,8 @@ M-sound new Γ (ƛˢ bˢ)   σ
     |    M-sound (next (next new)) (map-apply Ψ (Var new ∷ Γ)) bˢ (apply Ψ (Var (next new)))
 ... | nothing              | q = _
 ... | just (new'  , Φ , b) | q
-    rewrite ▻-expand² Φ Ψ Γ (Var new)
-    | p   | ⇒-expand² Φ Ψ (Var new) (Var (next new)) | q = refl
+    rewrite ▻ᵛ-expand² Φ Ψ Γ (Var new)
+    | p   | ⇒-expand²  Φ Ψ (Var new) (Var (next new)) | q = refl
 M-sound new Γ (fˢ · xˢ) σ
     with M       (next new) Γ fˢ (Var new ⇒ σ)
     |    M-sound (next new) Γ fˢ (Var new ⇒ σ)
