@@ -1,14 +1,16 @@
-module HMTS.Utilities.Membership where
+module HMTS.Library.Membership where
 
+open import Function
 open import Relation.Nullary
 open import Relation.Binary
 open import Relation.Binary.PropositionalEquality
-open import Data.Empty
 open import Data.Fin
-open import Data.List
-open import Data.Vec  as Vec  hiding (_∈_; module _∈_; _++_)
+open import Data.List.Base
+open import Data.Vec hiding (_∈_; module _∈_; _++_)
 
-infix 2 _∈_ _⊆_ _∉_ _∈ᵛ_
+open import HMTS.Library.Prelude
+
+infix 2 _∈_ _∉_ _⊆_ _∈ᵛ_
 
 data _∈_ {α} {A : Set α} (x : A) : List A -> Set α where
   here  : ∀ {xs}   -> x ∈ x ∷ xs
@@ -17,34 +19,39 @@ data _∈_ {α} {A : Set α} (x : A) : List A -> Set α where
 _∉_ : ∀ {α} {A : Set α} -> A -> List A -> Set α
 x ∉ xs = ¬ (x ∈ xs)
 
-_⊆_ : ∀ {α} {A : Set α} -> List A -> List A -> Set α
-xs ⊆ ys = ∀ {x} -> x ∈ xs -> x ∈ ys
-
 ∈-to-Fin : ∀ {α} {A : Set α} {x} {xs : List A} -> x ∈ xs -> Fin (length xs)
 ∈-to-Fin  here     = zero
 ∈-to-Fin (there p) = suc (∈-to-Fin p)
 
 ∈-++₁ : ∀ {α} {A : Set α} {x} {xs ys : List A}
-        -> x ∈ xs -> x ∈ xs ++ ys
+      -> x ∈ xs -> x ∈ xs ++ ys
 ∈-++₁  here     = here
 ∈-++₁ (there p) = there (∈-++₁ p)
 
 ∈-++₂ : ∀ {α} {A : Set α} {x} {ys : List A}
-        -> (xs : List A) -> x ∈ ys -> x ∈ xs ++ ys
+      -> (xs : List A) -> x ∈ ys -> x ∈ xs ++ ys
 ∈-++₂  []      p = p
 ∈-++₂ (x ∷ xs) p = there (∈-++₂ xs p)
+
+elim-∈-∷ : ∀ {α} {A : Set α} {x y} {xs ys : List A}
+         -> (∀ {x} -> x ∈ xs -> x ∈ ys) -> x ∈ y ∷ xs -> y ∈ ys -> x ∈ ys
+elim-∈-∷ f  here     q = q
+elim-∈-∷ f (there p) q = f p
 
 _∘∉_ : ∀ {α} {A : Set α} {x y} {xs : List A} -> x ≢ y -> x ∉ xs -> x ∉ y ∷ xs
 _∘∉_ p q  here     = p refl
 _∘∉_ p q (there r) = q r
 
-∈? : ∀ {α} {A : Set α} -> Decidable (_≡_ {A = A}) -> Decidable (_∈_ {A = A})
-∈? _≟_ y  []      = no λ()
-∈? _≟_ y (x ∷ xs) with y ≟ x
+_∈?_ : ∀ {α} {A : Set α} {{_ : DecEq A}} -> Decidable (_∈_ {A = A})
+_∈?_ y  []      = no λ()
+_∈?_ y (x ∷ xs) with y ≟ x
 ... | yes p rewrite p = yes here
-... | no  p with ∈? _≟_ y xs
+... | no  p with y ∈? xs
 ... | yes q = yes (there q)
 ... | no  q = no (p ∘∉ q)
+
+_⊆_ : ∀ {α} {A : Set α} -> List A -> List A -> Set α
+xs ⊆ ys = ∀ {x} -> x ∈ xs -> x ∈ ys
 
 ⊆-refl-++₂ : ∀ {α} {A : Set α} {xs : List A} ys -> xs ⊆ ys ++ xs
 ⊆-refl-++₂  []      p = p
@@ -53,6 +60,14 @@ _∘∉_ p q (there r) = q r
 ⊆-∷ : ∀ {α} {A : Set α} {x} {xs ys : List A} -> xs ⊆ ys -> x ∷ xs ⊆ x ∷ ys
 ⊆-∷ sub  here     = here
 ⊆-∷ sub (there p) = there (sub p)
+
+_⊆?_ : ∀ {α} {A : Set α} {{_ : DecEq A}} -> Decidable (_⊆_ {A = A})
+[]       ⊆? ys = yes λ()
+(x ∷ xs) ⊆? ys with x ∈? ys
+... | no  p = no λ r -> p (r here)
+... | yes p with xs ⊆? ys
+... | no  q = no λ r -> q (r ∘ there)
+... | yes q = yes λ r -> elim-∈-∷ q r p
 
 ----------
 
