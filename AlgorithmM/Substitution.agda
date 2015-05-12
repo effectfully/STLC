@@ -4,9 +4,9 @@ open import Function
 open import Relation.Nullary
 open import Relation.Binary.PropositionalEquality hiding (subst)
 open import Data.Empty
-open import Data.Bool hiding (_≟_)
-open import Data.Nat  as Nat
-open import Data.Maybe
+open import Data.Bool.Base
+open import Data.Nat.Base
+open import Data.Maybe.Base
 open import Data.Product
 open import Data.Vec  as Vec hiding (_>>=_)
 

@@ -4,8 +4,8 @@ open import Function
 open import Relation.Nullary
 open import Relation.Binary.PropositionalEquality hiding (subst)
 open import Data.Empty
-open import Data.Nat  as Nat
-open import Data.Maybe
+open import Data.Nat.Base
+open import Data.Maybe.Base
 open import Data.Product
 open import Data.Vec  as Vec hiding (_>>=_)
 
@@ -16,7 +16,7 @@ open import HMTS.AlgorithmM.Substitution
 open import HMTS.AlgorithmM.Term
 
 subst : ∀ i τ -> Maybe (∃ λ Ψ -> apply Ψ (Var i) ≡ apply Ψ τ)
-subst i σ = case ∈? _≟_ i (ftv-all σ) of λ
+subst i σ = case i ∈? ftv-all σ of λ
   { (yes _) -> nothing
   ; (no  p) -> just (leaf (just (i , σ)) , subst-apply i σ p)
   }
@@ -56,7 +56,7 @@ M new Γ (varˢ i)  σ =
 M new Γ (ƛˢ bˢ)   σ =
   U σ (Var new ⇒ Var (next new))
     >>= λ{ (Ψ , p)        ->
-  M (next (next new)) (map-apply Ψ (Var new ∷ Γ)) bˢ (apply Ψ (Var (next new)))
+  M (next (next new)) (map-apply Ψ (Γ ▻ᵛ Var new)) bˢ (apply Ψ (Var (next new)))
     >>= λ{ (new' , Φ , b) ->
   just (new' , branch Φ Ψ , lam Φ Ψ p b)
   }}

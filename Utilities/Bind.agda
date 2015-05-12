@@ -4,7 +4,7 @@ module HMTS.Utilities.Bind where
 -- https://personal.cis.strath.ac.uk/conor.mcbride/fooling/Jigger.agda
 
 open import Function
-open import Data.Nat
+open import Data.Nat.Base
 open import Data.Fin hiding (_+_; #_)
 
 open import HMTS.Data.Syntax

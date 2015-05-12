@@ -2,9 +2,9 @@ module HMTS.AlgorithmM.Term where
 
 open import Function
 open import Relation.Binary.PropositionalEquality
-open import Data.Maybe
+open import Data.Maybe.Base
 open import Data.Product
-open import Data.List
+open import Data.List.Base
 open import Data.Vec  as Vec hiding (fromList)
 
 open import HMTS.Utilities.Prelude

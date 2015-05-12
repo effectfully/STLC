@@ -1,6 +1,6 @@
 module HMTS.NbE.Environment where
 
-open import Data.List
+open import Data.List.Base
 
 open import HMTS.Utilities.Prelude
 open import HMTS.Data.Type
@@ -17,6 +17,3 @@ map-Env : ∀ {B C : Type -> Set} {Γ}
         -> (∀ {σ} -> B σ -> C σ) -> Env B Γ -> Env C Γ
 map-Env f  Ø       = Ø
 map-Env f (ρ ▷ y) = map-Env f ρ ▷ f y
-
-_=[_]>_ : Con -> (Con -> Type -> Set) -> Con -> Set
-Γ =[ B ]> Δ = Env (B Δ) Γ

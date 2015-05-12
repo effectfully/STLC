@@ -18,13 +18,17 @@ ex1 = plus · (s · z) · (plus · z · (s · (s · z)))
 
 open import Data.Fin
 
--- typing C-c C-n
+-- Typing C-c C-n
 
 --   norm ex1
 
 -- will give you
 
 --   ƛˢ ƛˢ varˢ (suc zero) · (varˢ (suc zero) · (varˢ (suc zero) · varˢ zero))
+
+-- The same result will give
+
+--   norm' ex1
 
 nil : Pure
 nil = pure (2 # λ f z → z)

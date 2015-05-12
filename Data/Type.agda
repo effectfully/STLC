@@ -2,11 +2,12 @@ module HMTS.Data.Type where
 
 open import Function
 open import Relation.Nullary
+open import Relation.Binary hiding (_⇒_)
 open import Relation.Binary.PropositionalEquality
-open import Data.Nat
-open import Data.Maybe
-open import Data.List
-open import Data.Vec  hiding (_⊛_; _++_)
+open import Data.Nat.Base
+open import Data.Product
+open import Data.List.Base
+open import Data.Vec hiding (_⊛_; _++_)
 
 open import HMTS.Utilities.Prelude
 
@@ -39,9 +40,18 @@ ftv-all (σ ⇒ τ) = ftv-all σ ++ ftv-all τ
 ftv : Type -> List ℕ
 ftv = nub ∘ ftv-all
 
-_≟ᵀ_ : (σ τ : Type) -> Maybe (σ ≡ τ)
-Var i   ≟ᵀ  Var j    with i ≟ j
-... | yes r rewrite r = just refl
-... | no  _           = nothing
-(σ ⇒ τ) ≟ᵀ (σ' ⇒ τ') = cong₂ _⇒_ <$> (σ ≟ᵀ σ') ⊛ (τ ≟ᵀ τ')
-_        ≟ᵀ _        = nothing
+Var-inj : ∀ {i j} -> Var i ≡ Var j -> i ≡ j
+Var-inj refl = refl
+
+⇒-inj : ∀ {σ τ σ' τ'} -> (σ ⇒ τ) ≡ (σ' ⇒ τ') -> σ ≡ σ' × τ ≡ τ'
+⇒-inj refl = refl , refl
+
+_≟ᵀ_ : Decidable (_≡_ {A = Type})
+Var i   ≟ᵀ  Var j    = dcong Var Var-inj (i ≟ j)
+(σ ⇒ τ) ≟ᵀ (σ' ⇒ τ') = dcong₂ _⇒_ ⇒-inj (σ ≟ᵀ σ') (τ ≟ᵀ τ')
+Var _   ≟ᵀ (_ ⇒ _)   = no λ()
+(_ ⇒ _) ≟ᵀ Var _     = no λ()
+
+instance
+  DecEq-Type : DecEq Type
+  DecEq-Type = record { _≟_ = _≟ᵀ_ }

@@ -1,6 +1,6 @@
 module HMTS.Utilities.Names where
 
-open import Data.Nat
+open import Data.Nat.Base
 
 open import HMTS.Data.Type
 

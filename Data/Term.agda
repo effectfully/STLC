@@ -1,6 +1,6 @@
 module HMTS.Data.Term where
 
-open import Data.List
+open import Data.List.Base
 open import Data.Vec hiding (_∈_)
 
 open import HMTS.Utilities.Prelude

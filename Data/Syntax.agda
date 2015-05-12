@@ -1,6 +1,6 @@
 module HMTS.Data.Syntax where
 
-open import Data.Nat
+open import Data.Nat.Base
 open import Data.Fin hiding (_+_)
 
 infixl 5 _·_

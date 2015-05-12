@@ -3,11 +3,11 @@ module HMTS.Utilities.Generalize where
 open import Level
 open import Function
 open import Relation.Nullary.Decidable
-open import Data.Bool
-open import Data.Nat  as Nat
-open import Data.Maybe
+open import Data.Bool.Base
+open import Data.Nat.Base
+open import Data.Maybe.Base
 open import Data.Product
-open import Data.List as List
+open import Data.List.Base as List
 
 open import HMTS.Utilities.Prelude
 open import HMTS.Data.Type

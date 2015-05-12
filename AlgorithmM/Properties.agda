@@ -2,7 +2,7 @@ module HMTS.AlgorithmM.Properties where
 
 open import Relation.Binary.PropositionalEquality
 open import Data.Fin
-open import Data.Maybe
+open import Data.Maybe.Base
 open import Data.Product
 open import Data.Vec as Vec
 
