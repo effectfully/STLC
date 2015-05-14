@@ -43,8 +43,8 @@ _∘∉_ p q  here     = p refl
 _∘∉_ p q (there r) = q r
 
 _∈?_ : ∀ {α} {A : Set α} {{_ : DecEq A}} -> Decidable (_∈_ {A = A})
-_∈?_ y  []      = no λ()
-_∈?_ y (x ∷ xs) with y ≟ x
+y ∈?  []      = no λ()
+y ∈? (x ∷ xs) with y ≟ x
 ... | yes p rewrite p = yes here
 ... | no  p with y ∈? xs
 ... | yes q = yes (there q)

@@ -36,8 +36,8 @@ mutual
     WEAKEN : ∀ {Δ σ} Γ -> Γ ⊢ⁿᵉ σ -> Δ ⊢ⁿᵉ σ
     WEAKEN {Δ} Γ n = case Γ ⊆? Δ of λ
       { (yes sub) -> weakenⁿᵉ sub n
-      ; (no  _  ) -> impossible
-      } where postulate impossible : _
+      ; (no  _  ) -> IMPOSSIBLE
+      } where postulate IMPOSSIBLE : _
 
 ↑s : ∀ {Γ} -> Env [_]ᵀ Γ
 ↑s {[]}    = Ø

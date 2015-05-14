@@ -29,17 +29,17 @@ specialize (var v) = var (specialize-var v)
 specialize (ƛ b)   = ƛ (specialize b)
 specialize (f ∙ x) = specialize f ∙ specialize x
 
-Generalizeᶜ : ∀ {γ α β} {A : Set α} {B : Set β}
-            -> List A -> (List (A × B) -> Set (β Level.⊔ γ)) -> Set (β Level.⊔ γ)
-Generalizeᶜ      []      C = C []
-Generalizeᶜ {γ} (x ∷ xs) C = ∀ {y} -> Generalizeᶜ {γ} xs (C ∘ _∷_ (x , y))
+Associate : ∀ {γ α β} {A : Set α} {B : Set β}
+          -> List A -> (List (A × B) -> Set (β Level.⊔ γ)) -> Set (β Level.⊔ γ)
+Associate      []      C = C []
+Associate {γ} (x ∷ xs) C = ∀ {y} -> Associate {γ} xs (C ∘ _∷_ (x , y))
 
 generalizeᶜ : ∀ {Γ σ} {c : Subst -> Subst} is
-            -> Γ ⊢ σ -> Generalizeᶜ is λ Ψ ->
+            -> Γ ⊢ σ -> Associate is λ Ψ ->
                  let Φ = c Ψ in List.map (apply Φ) Γ ⊢ apply Φ σ
 generalizeᶜ  []      e = specialize e
 generalizeᶜ (i ∷ is) e = generalizeᶜ is e
 
 generalize : ∀ {Γ σ}
-           -> Γ ⊢ σ -> Generalizeᶜ (ftv σ) λ Ψ -> List.map (apply Ψ) Γ ⊢ apply Ψ σ
+           -> Γ ⊢ σ -> Associate (ftv σ) λ Ψ -> List.map (apply Ψ) Γ ⊢ apply Ψ σ
 generalize {σ = σ} = generalizeᶜ (ftv σ)

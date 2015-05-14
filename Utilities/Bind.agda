@@ -31,8 +31,9 @@ bindᶜ k (suc n) b = bindᶜ (k ∘ suc) n (b (varˢ (shift (k 0))))
 _#_ : ∀ {n} m -> Bindᶜ (flip _+_ n) m -> Syntax n
 _#_ {n} m b = ƛⁿ m (bindᶜ (flip _+_ n) m b)
 
-example : Syntax 0
-example = 3 # λ h f x → (1 # λ t → t · h) · (f · x)
+private
+  example : Syntax 0
+  example = 3 # λ h f x → (1 # λ t → t · h) · (f · x)
 
 -- I tried to use instance arguments, but Agda infers wrong types.
 
