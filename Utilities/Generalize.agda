@@ -43,3 +43,13 @@ generalizeᶜ (i ∷ is) e = generalizeᶜ is e
 generalize : ∀ {Γ σ}
            -> Γ ⊢ σ -> Associate (ftv σ) λ Ψ -> List.map (apply Ψ) Γ ⊢ apply Ψ σ
 generalize {σ = σ} = generalizeᶜ (ftv σ)
+
+private
+  K : Term (Var 0 ⇒ Var 1 ⇒ Var 0)
+  K = ƛ ƛ var (vs vz)
+
+  K' : Term (Var 2 ⇒ Var 0 ⇒ Var 2)
+  K' = generalize K
+
+  K'' : ∀ {a b} -> Term (Var a ⇒ Var b ⇒ Var a)
+  K'' = generalize K
