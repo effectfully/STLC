@@ -18,7 +18,7 @@ data _⊢_ (Γ : Con) : Type -> Set where
   _∙_ : ∀ {σ τ} -> Γ ⊢ σ ⇒ τ -> Γ ⊢ σ     -> Γ ⊢ τ
 ```
 
-and [a mapping](https://github.com/effectfully/STLC-in-Agda/blob/master/AlgorithmM/Main.agda) from the former to the latter via tweaked version of algorithm M:
+and [a mapping](https://github.com/effectfully/STLC-in-Agda/blob/master/AlgorithmM/Main.agda) from the former to the latter via a tweaked version of algorithm M:
 
 ```
 M : ∀ {n} -> ℕ -> (Γ : Conᵛ n) -> Syntax n -> (σ : Type)
@@ -33,7 +33,7 @@ There is also [a universe polymorphic eval](https://github.com/effectfully/STLC-
 
 There is also [a cute little trick](https://github.com/effectfully/STLC-in-Agda/blob/master/Utilities/Generalize.agda) to mimic Hindley-Milner generalizaion. Still, type variables are too rigid.
 
-References
+## References
 
 1. Martin Grabmüller. [Algorithm W Step by Step](https://github.com/wh5a/Algorithm-W-Step-By-Step)
 2. Oukseh Lee, Kwangkeun Yi. [A Generalized Let-Polymorphic Type Inference Algorithm](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.6832)
