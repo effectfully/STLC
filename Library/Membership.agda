@@ -1,4 +1,4 @@
-module HMTS.Library.Membership where
+module STLC.Library.Membership where
 
 open import Function
 open import Relation.Nullary
@@ -8,7 +8,7 @@ open import Data.Fin
 open import Data.List.Base
 open import Data.Vec hiding (_∈_; module _∈_; _++_)
 
-open import HMTS.Library.Prelude
+open import STLC.Library.Prelude
 
 infix 2 _∈_ _∉_ _⊆_ _∈ᵛ_
 

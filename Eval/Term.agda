@@ -1,9 +1,9 @@
-module HMTS.Eval.Term where
+module STLC.Eval.Term where
 
 open import Data.List.Base
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Eval.Type
+open import STLC.Utilities.Prelude
+open import STLC.Eval.Type
 
 infix  1 _⊢_
 infixl 5 _∙_

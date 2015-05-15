@@ -1,14 +1,14 @@
-module HMTS.NbE.Main where
+module STLC.NbE.Main where
 
 open import Relation.Binary.PropositionalEquality hiding ([_])
 open import Data.List hiding ([_])
 open import Algebra
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Type
-open import HMTS.Data.Term
-open import HMTS.NbE.NormalForm
-open import HMTS.NbE.Environment
+open import STLC.Utilities.Prelude
+open import STLC.Data.Type
+open import STLC.Data.Term
+open import STLC.NbE.NormalForm
+open import STLC.NbE.Environment
 
 open Monoid (monoid Type) hiding (_∙_; sym)
 

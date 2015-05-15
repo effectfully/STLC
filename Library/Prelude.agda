@@ -1,4 +1,4 @@
-module HMTS.Library.Prelude where
+module STLC.Library.Prelude where
 
 open import Level
 open import Function

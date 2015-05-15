@@ -1,4 +1,4 @@
-module HMTS.AlgorithmM.Substitution where
+module STLC.AlgorithmM.Substitution where
 
 open import Function
 open import Relation.Nullary
@@ -10,8 +10,8 @@ open import Data.Maybe.Base
 open import Data.Product
 open import Data.Vec  as Vec hiding (_>>=_)
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Type
+open import STLC.Utilities.Prelude
+open import STLC.Data.Type
 
 data Tree {α} (A : Set α) : Set α where
   leaf   : A -> Tree A

@@ -1,12 +1,12 @@
-module HMTS.Data.Term where
+module STLC.Data.Term where
 
 open import Data.List.Base
 open import Data.Vec hiding (_∈_)
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Syntax
-open import HMTS.Data.Type
-open import HMTS.AlgorithmM.Term renaming (_⊢_ to _⊢ᵛ_; module _⊢_ to _⊢ᵛ_)
+open import STLC.Utilities.Prelude
+open import STLC.Data.Syntax
+open import STLC.Data.Type
+open import STLC.AlgorithmM.Term renaming (_⊢_ to _⊢ᵛ_; module _⊢_ to _⊢ᵛ_)
                                  hiding (erase)
 
 infix  1 _⊢_

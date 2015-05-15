@@ -1,8 +1,8 @@
-module HMTS.Tests.Church where
+module STLC.Tests.Church where
 
 open import Relation.Binary.PropositionalEquality
 
-open import HMTS.Main
+open import STLC.Main
 
 z : Pure
 z = pure (2 # λ f z → z)

@@ -1,4 +1,4 @@
-module HMTS.Data.Syntax where
+module STLC.Data.Syntax where
 
 open import Data.Nat.Base
 open import Data.Fin hiding (_+_)

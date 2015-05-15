@@ -1,4 +1,4 @@
-module HMTS.Eval.Type where
+module STLC.Eval.Type where
 
 open import Data.Nat.Base
 open import Data.Fin

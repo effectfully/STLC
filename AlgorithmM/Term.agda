@@ -1,4 +1,4 @@
-module HMTS.AlgorithmM.Term where
+module STLC.AlgorithmM.Term where
 
 open import Function
 open import Relation.Binary.PropositionalEquality
@@ -7,10 +7,10 @@ open import Data.Product
 open import Data.List.Base
 open import Data.Vec  as Vec hiding (fromList)
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Syntax
-open import HMTS.Data.Type
-open import HMTS.AlgorithmM.Substitution
+open import STLC.Utilities.Prelude
+open import STLC.Data.Syntax
+open import STLC.Data.Type
+open import STLC.AlgorithmM.Substitution
 
 infix  1 _⊢_
 infixl 5 _∙_

@@ -1,6 +1,6 @@
-module HMTS.Tests.Combs where
+module STLC.Tests.Combs where
 
-open import HMTS.Main
+open import STLC.Main
 
 -- You can omit type signatures.
 

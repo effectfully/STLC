@@ -1,4 +1,4 @@
-module HMTS.Data.Type where
+module STLC.Data.Type where
 
 open import Function
 open import Relation.Nullary
@@ -9,7 +9,7 @@ open import Data.Product
 open import Data.List.Base
 open import Data.Vec hiding (_⊛_; _++_)
 
-open import HMTS.Utilities.Prelude
+open import STLC.Utilities.Prelude
 
 infixr 2 _⇒_
 infixl 5 _▻_ _▻▻_ _▻ᵛ_

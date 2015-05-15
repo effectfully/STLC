@@ -1,9 +1,9 @@
-module HMTS.NbE.Environment where
+module STLC.NbE.Environment where
 
 open import Data.List.Base
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Type
+open import STLC.Utilities.Prelude
+open import STLC.Data.Type
 
 data Env (B : Type -> Set) : Con -> Set where
   Ø    : Env B []

@@ -1,15 +1,15 @@
-module HMTS.NbE.LiftableTerms where
+module STLC.NbE.LiftableTerms where
 
 open import Function
 open import Relation.Nullary
 open import Data.Maybe.Base
 open import Data.List.Base hiding ([_])
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Type
-open import HMTS.Data.Term
-open import HMTS.NbE.NormalForm
-open import HMTS.NbE.Environment
+open import STLC.Utilities.Prelude
+open import STLC.Data.Type
+open import STLC.Data.Term
+open import STLC.NbE.NormalForm
+open import STLC.NbE.Environment
 
 ⊢ⁿᶠ_ : Type -> Set
 ⊢ⁿᶠ σ = ∀ {Γ} -> Γ ⊢ⁿᶠ σ

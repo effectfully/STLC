@@ -1,4 +1,4 @@
-module HMTS.Eval.Eval where
+module STLC.Eval.Eval where
 
 open import Level as L
 open import Function
@@ -9,10 +9,10 @@ open import Data.Product
 open import Data.List hiding ([_])
 open import Data.Vec  hiding ([_]; _∈_)
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Library.Sets
-open import HMTS.Eval.Type
-open import HMTS.Eval.Term
+open import STLC.Utilities.Prelude
+open import STLC.Library.Sets
+open import STLC.Eval.Type
+open import STLC.Eval.Term
 
 [_]ᵀᴸ : ∀ {n} -> (σ : Type n) -> Level ^ n -> Level
 [ Var i ]ᵀᴸ αs = on-^ (lookup i) αs

@@ -1,4 +1,4 @@
-module HMTS.Library.Sets where
+module STLC.Library.Sets where
 
 open import Level as L
 open import Function

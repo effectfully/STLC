@@ -1,8 +1,8 @@
-module HMTS.NbE.NormalForm where
+module STLC.NbE.NormalForm where
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Type
-open import HMTS.Data.Term
+open import STLC.Utilities.Prelude
+open import STLC.Data.Type
+open import STLC.Data.Term
 
 infix  1 _⊢ⁿᵉ_ _⊢ⁿᶠ_
 

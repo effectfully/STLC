@@ -1,4 +1,4 @@
-module HMTS.AlgorithmM.Properties where
+module STLC.AlgorithmM.Properties where
 
 open import Relation.Binary.PropositionalEquality
 open import Data.Fin
@@ -6,12 +6,12 @@ open import Data.Maybe.Base
 open import Data.Product
 open import Data.Vec as Vec
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Syntax
-open import HMTS.Data.Type
-open import HMTS.AlgorithmM.Substitution
-open import HMTS.AlgorithmM.Term
-open import HMTS.AlgorithmM.Main
+open import STLC.Utilities.Prelude
+open import STLC.Data.Syntax
+open import STLC.Data.Type
+open import STLC.AlgorithmM.Substitution
+open import STLC.AlgorithmM.Term
+open import STLC.AlgorithmM.Main
 
 erase-coerceBy : ∀ {n σ τ} {Γ : Conᵛ n} (p : σ ≡ τ) (e : Γ ⊢ σ)
                -> erase (coerceBy p e) ≡ erase e

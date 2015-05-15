@@ -1,8 +1,8 @@
-module HMTS.Utilities.Names where
+module STLC.Utilities.Names where
 
 open import Data.Nat.Base
 
-open import HMTS.Data.Type
+open import STLC.Data.Type
 
 a = Var 0
 b = Var 1

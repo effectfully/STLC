@@ -1,4 +1,4 @@
-module HMTS.Utilities.Generalize where
+module STLC.Utilities.Generalize where
 
 open import Level
 open import Function
@@ -9,9 +9,9 @@ open import Data.Maybe.Base
 open import Data.Product
 open import Data.List.Base as List
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Type
-open import HMTS.Data.Term
+open import STLC.Utilities.Prelude
+open import STLC.Data.Type
+open import STLC.Data.Term
 
 Subst : Set
 Subst = List (ℕ × Type)

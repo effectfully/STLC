@@ -1,21 +1,21 @@
-module HMTS.Main where
+module STLC.Main where
 
 open import Function
 open import Data.Product
 
-open import HMTS.Utilities.Generalize
-open import HMTS.AlgorithmM.Main
-open import HMTS.NbE.Main          as M
-open import HMTS.NbE.LiftableTerms as L
+open import STLC.Utilities.Generalize
+open import STLC.AlgorithmM.Main
+open import STLC.NbE.Main          as M
+open import STLC.NbE.LiftableTerms as L
 
 open import Data.Unit.Base         public using  (⊤)
 open import Data.Nat.Base          public hiding (erase)
-open import HMTS.Utilities.Prelude public
-open import HMTS.Utilities.Bind    public
-open import HMTS.Utilities.Names   public
-open import HMTS.Data.Syntax       public
-open import HMTS.Data.Type         public
-open import HMTS.Data.Term         public
+open import STLC.Utilities.Prelude public
+open import STLC.Utilities.Bind    public
+open import STLC.Utilities.Names   public
+open import STLC.Data.Syntax       public
+open import STLC.Data.Type         public
+open import STLC.Data.Term         public
 
 run : ∀ {γ} {C : ∀ {Γ σ} -> (e : Γ ⊢ σ) -> Set γ}
     -> (∀ {Γ σ} -> (e : Γ ⊢ σ) -> C e)

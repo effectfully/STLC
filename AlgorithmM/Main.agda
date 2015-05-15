@@ -1,4 +1,4 @@
-module HMTS.AlgorithmM.Main where
+module STLC.AlgorithmM.Main where
 
 open import Function
 open import Relation.Nullary
@@ -9,11 +9,11 @@ open import Data.Maybe.Base
 open import Data.Product
 open import Data.Vec  as Vec hiding (_>>=_)
 
-open import HMTS.Utilities.Prelude
-open import HMTS.Data.Syntax
-open import HMTS.Data.Type
-open import HMTS.AlgorithmM.Substitution
-open import HMTS.AlgorithmM.Term
+open import STLC.Utilities.Prelude
+open import STLC.Data.Syntax
+open import STLC.Data.Type
+open import STLC.AlgorithmM.Substitution
+open import STLC.AlgorithmM.Term
 
 subst : ∀ i τ -> Maybe (∃ λ Ψ -> apply Ψ (Var i) ≡ apply Ψ τ)
 subst i σ = case i ∈? ftv-all σ of λ
