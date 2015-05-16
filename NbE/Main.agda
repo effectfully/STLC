@@ -12,6 +12,9 @@ open import STLC.NbE.Environment
 
 open Monoid (monoid Type) hiding (_∙_; sym)
 
+-- These [...] are meant to be semantic brackets ⟦...⟧,
+-- but I have problems with unicode.
+
 [_/_]ᵀ : Con -> Type -> Set
 [ Γ / Var i ]ᵀ = Γ ⊢ⁿᵉ Var i
 [ Γ / σ ⇒ τ ]ᵀ = ∀ Δ -> [ Γ ▻▻ Δ / σ ]ᵀ -> [ Γ ▻▻ Δ / τ ]ᵀ

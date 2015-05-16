@@ -51,5 +51,5 @@ private
   K' : Term (Var 2 ⇒ Var 0 ⇒ Var 2)
   K' = generalize K
 
-  K'' : ∀ {a b} -> Term (Var a ⇒ Var b ⇒ Var a)
+  K'' : ∀ {a b} -> Term (a ⇒ b ⇒ a)
   K'' = generalize K
