@@ -46,6 +46,8 @@ lam {new} {Γ = Γ} Φ Ψ p b rewrite ▻ᵛ-expand² Φ Ψ Γ (Var new) =
            (sym (cong (apply Φ) p)))
     (ƛ b)
 
+-- We need explicit substitutions to improve perfomance.
+
 M : ∀ {n} -> ℕ -> (Γ : Conᵛ n) -> Syntax n -> (σ : Type)
   -> Maybe (ℕ × ∃ λ Ψ -> map-apply Ψ Γ ⊢ apply Ψ σ)
 M new Γ (varˢ i)  σ =

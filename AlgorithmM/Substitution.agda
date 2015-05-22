@@ -8,7 +8,7 @@ open import Data.Bool.Base
 open import Data.Nat.Base
 open import Data.Maybe.Base
 open import Data.Product
-open import Data.Vec  as Vec hiding (_>>=_)
+open import Data.Vec as Vec hiding (_>>=_)
 
 open import STLC.Utilities.Prelude
 open import STLC.Data.Type

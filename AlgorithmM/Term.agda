@@ -5,7 +5,7 @@ open import Relation.Binary.PropositionalEquality
 open import Data.Maybe.Base
 open import Data.Product
 open import Data.List.Base
-open import Data.Vec  as Vec hiding (fromList)
+open import Data.Vec as Vec
 
 open import STLC.Utilities.Prelude
 open import STLC.Data.Syntax
