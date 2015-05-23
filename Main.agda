@@ -5,6 +5,7 @@ open import Data.Product
 
 open import STLC.Utilities.Generalize
 open import STLC.AlgorithmM.Main
+open import STLC.AlgorithmM.Term using (unᵛ)
 open import STLC.NbE.Main          as M
 open import STLC.NbE.LiftableTerms as L
 
@@ -20,9 +21,9 @@ open import STLC.Data.Term         public
 run : ∀ {γ} {C : ∀ {Γ σ} -> (e : Γ ⊢ σ) -> Set γ}
     -> (∀ {Γ σ} -> (e : Γ ⊢ σ) -> C e)
     -> (eˢ : Syntax⁽⁾)
-    -> runM eˢ >>=ᵀ λ{ (_ , e) -> C (unᵛ e) }
+    -> runM eˢ >>=ᵀ λ{ (_ , e) -> C (unʳ (unᵛ e)) }
 run f eˢ =
-       runM eˢ >>=⊤ λ{ (_ , e) -> f (unᵛ e) }
+       runM eˢ >>=⊤ λ{ (_ , e) -> f (unʳ (unᵛ e)) }
 
 term  = run  generalize
 norm  = run (erase ∘ M.normalize)

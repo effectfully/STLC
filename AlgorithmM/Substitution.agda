@@ -57,7 +57,7 @@ subst-apply : ∀ i σ -> i ∉ ftv-all σ
 subst-apply i σ p rewrite subst-self i σ = sym (apply-self i σ p)
 
 mutual
-  ⇒-expand : ∀ Ψ σ τ -> apply Ψ (σ ⇒ τ) ≡ (apply Ψ σ ⇒ apply Ψ τ)
+  ⇒-expand : ∀ Ψ σ τ -> apply Ψ (σ ⇒ τ) ≡ apply Ψ σ ⇒ apply Ψ τ
   ⇒-expand (leaf ψ)     σ τ = refl
   ⇒-expand (branch Φ Ψ) σ τ = ⇒-expand² Φ Ψ σ τ
 

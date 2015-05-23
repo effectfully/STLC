@@ -1,13 +1,13 @@
 module STLC.Data.Term where
 
-open import Data.List.Base
+open import Data.List.Base as List
 open import Data.Vec hiding (_∈_)
 
 open import STLC.Utilities.Prelude
 open import STLC.Data.Syntax
 open import STLC.Data.Type
-open import STLC.AlgorithmM.Term renaming (_⊢_ to _⊢ᵛ_; module _⊢_ to _⊢ᵛ_)
-                                 hiding (erase)
+open import STLC.AlgorithmM.Substitution
+open import STLC.AlgorithmM.Term renaming (_⊢_ to _⊢ᵛ_; module _⊢_ to _⊢ᵛ_) hiding (erase)
 
 infix  1 _⊢_
 infixl 5 _∙_
@@ -25,7 +25,7 @@ erase (var v) = varˢ (∈-to-Fin v)
 erase (ƛ b)   = ƛˢ (erase b)
 erase (f ∙ x) = erase f · erase x
 
-unᵛ : ∀ {n σ} {Γ : Conᵛ n} -> Γ ⊢ᵛ σ -> toList Γ ⊢ σ
-unᵛ (var v) = var (∈ᵛ-to-∈ v)
-unᵛ (ƛ b)   = ƛ (unᵛ b)
-unᵛ (f ∙ x) = unᵛ f ∙ unᵛ x
+unʳ : ∀ {n σ} {Γ : Conᵛ n} -> Γ ⊢ʳ σ -> toList Γ ⊢ σ
+unʳ (var v) = var (∈ᵛ-to-∈ v)
+unʳ (ƛ b)   = ƛ (unʳ b)
+unʳ (f ∙ x) = unʳ f ∙ unʳ x

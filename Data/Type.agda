@@ -11,8 +11,8 @@ open import Data.Vec hiding (_⊛_; _++_)
 
 open import STLC.Utilities.Prelude
 
-infixr 2 _⇒_
-infixl 5 _▻_ _▻▻_ _▻ᵛ_
+infixr 5 _⇒_
+infixl 6 _▻_ _▻▻_ _▻ᵛ_
 
 data Type : Set where
   Var  : ℕ -> Type

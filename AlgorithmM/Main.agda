@@ -46,14 +46,12 @@ lam {new} {Γ = Γ} Φ Ψ p b rewrite ▻ᵛ-expand² Φ Ψ Γ (Var new) =
            (sym (cong (apply Φ) p)))
     (ƛ b)
 
--- We need explicit substitutions to improve perfomance.
-
-M : ∀ {n} -> ℕ -> (Γ : Conᵛ n) -> Syntax n -> (σ : Type)
+M : ∀ {n} -> ℕ -> (Γ : Conᵛ n) -> (x : Syntax n) -> (σ : Type)
   -> Maybe (ℕ × ∃ λ Ψ -> map-apply Ψ Γ ⊢ apply Ψ σ)
 M new Γ (varˢ i)  σ =
   U σ (Vec.lookup i Γ)
     >>= λ{ (Ψ , p) ->
-  just (new , Ψ , coerceBy (sym p) (specialize Ψ (var (lookup-in i Γ))))
+  just (new , Ψ , coerceBy (sym p) (Ψ # var (lookup-in i Γ)))
   }
 M new Γ (ƛˢ bˢ)   σ =
   U σ (Var new ⇒ Var (next new))
@@ -67,7 +65,7 @@ M new Γ (fˢ · xˢ) σ =
     >>= λ{ (new'  , Ψ , f) ->
   M  new'      (map-apply Ψ Γ) xˢ (apply Ψ (Var new))
     >>= λ{ (new'' , Φ , x) ->
-  just (new'' , branch Φ Ψ , coerceBy (⇒-expand² Φ Ψ (Var new) σ) (specialize Φ f) ∙ x)
+  just (new'' , branch Φ Ψ , coerceBy (⇒-expand² Φ Ψ (Var new) σ) (Φ # f) ∙ x)
   }}
 
 runM : Syntax⁽⁾ -> Maybe (∃ λ Ψ -> map-apply Ψ [] ⊢ apply Ψ (Var 0))
