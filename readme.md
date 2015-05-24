@@ -2,7 +2,7 @@
 
 ## A quick taste
 
-Getting an Agda function from a pure lambda term: 
+Getting a universe polymorphic Agda function from a pure lambda term: 
 
 ```
 quacky : Syntax⁽⁾
