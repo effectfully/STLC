@@ -17,6 +17,6 @@ Quacky = eval (compile quacky)
 
 -- Nope, too many computations.
 
--- psi : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ}
+-- Psi : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ}
 --     -> (B -> B -> C) -> (A -> B) -> A -> A -> C
--- psi = eval (compile (4 # λ a b c d → a · (b · c) · (b · d)))
+-- Psi = eval (compile (4 # λ a b c d → a · (b · c) · (b · d)))
