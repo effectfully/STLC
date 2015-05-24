@@ -8,6 +8,8 @@ open import STLC.AlgorithmM.Main
 open import STLC.AlgorithmM.Term using (unᵛ)
 open import STLC.NbE.Main          as M
 open import STLC.NbE.LiftableTerms as L
+open import STLC.Eval.Term renaming (_⊢_ to _⊢ᶠ_)
+open import STLC.Eval.Main
 
 open import Data.Unit.Base         public using  (⊤)
 open import Data.Nat.Base          public hiding (erase)
@@ -25,6 +27,13 @@ run : ∀ {γ} {C : ∀ {Γ σ} -> (e : Γ ⊢ σ) -> Set γ}
 run f eˢ =
        runM eˢ >>=⊤ λ{ (_ , e) -> f (unʳ (unᵛ e)) }
 
-term  = run  generalize
-norm  = run (erase ∘ M.normalize)
-norm' = run (erase ∘ L.normalize)
+term    = run  generalize
+norm    = run (erase ∘ M.normalize)
+norm'   = run (erase ∘ L.normalize)
+
+compile = λ eˢ ->
+  runM eˢ                     >>=⊤ λ{ (_ , e) ->
+  unⁿ (thicken (unʳ (unᵛ e))) >>=ʷ λ y ->
+  y                           >>=⊤ λ x -> x
+  }
+eval    = evaluate

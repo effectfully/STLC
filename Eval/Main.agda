@@ -1,4 +1,4 @@
-module STLC.Eval.Eval where
+module STLC.Eval.Main where
 
 open import Level as L
 open import Function

@@ -1,5 +1,22 @@
 ﻿# STLC-in-Agda
 
+## A quick taste
+
+Getting an Agda function from a pure lambda term: 
+
+```
+quacky : Syntax⁽⁾
+quacky = 3 # λ a b c → c · (b · a)
+
+Quacky : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ}
+       -> A -> (A -> B) -> (B -> C) -> C
+Quacky = eval (compile quacky)
+```
+
+`C-c C-n Quacky` gives `λ {.α} {.β} {.γ} {.A} {.B} {.C} y y₁ y₂ → y₂ (y₁ y)`.
+
+## Things
+
 This is simply typed lambda calculus with type variables in Agda. We have raw [Syntax](https://github.com/effectfully/STLC-in-Agda/blob/master/Data/Syntax.agda):
 
 ```
@@ -29,7 +46,7 @@ M : ∀ {n} -> ℕ -> (Γ : Conᵛ n) -> Syntax n -> (σ : Type)
 
 There are also two versions of normalization by evaluation: [the first](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Main.agda) is completely stolen from [4] and [the second](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/LiftableTerms.agda) is described in [5].
 
-There is also [a universe polymorphic eval](https://github.com/effectfully/STLC-in-Agda/blob/master/Eval/Main.agda), but it acts on a bit different encoding of STLC (`Fin`s in types instead of `Nat`s). Conversion is not presented, since it's a non-trivial thing, if makes sense at all.
+There is also [a universe polymorphic eval](https://github.com/effectfully/STLC-in-Agda/blob/master/Eval/Main.agda).
 
 There is also [a cute little trick](https://github.com/effectfully/STLC-in-Agda/blob/master/Utilities/Generalize.agda) to mimic Hindley-Milner generalization. Still, type variables are too rigid.
 

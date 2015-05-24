@@ -44,6 +44,17 @@ delete x (y ∷ xs) = if x == y then xs else y ∷ delete x xs
 nub : ∀ {α} {A : Set α} {{_ : DecEq A}} -> List A -> List A
 nub = foldr (λ x r -> x ∷ delete x r) []
 
+enumerate : ∀ {α} {A : Set α} -> List A -> List (ℕ × A)
+enumerate = go 0 where
+  go : ∀ {α} {A : Set α} -> ℕ -> List A -> List (ℕ × A)
+  go n  []      = []
+  go n (x ∷ xs) = (n , x) ∷ go (ℕ.suc n) xs
+
+Associate : ∀ {γ α β} {A : Set α} {B : Set β}
+          -> List A -> (List (A × B) -> Set (β Level.⊔ γ)) -> Set (β Level.⊔ γ)
+Associate      []      C = C []
+Associate {γ} (x ∷ xs) C = ∀ {y} -> Associate {γ} xs (C ∘ _∷_ (x , y))
+
 ≟-refl : ∀ {α} {A : Set α} {{_ : DecEq A}} -> (x : A) -> (x ≟ x) ≡ yes refl
 ≟-refl x with x ≟ x
 ... | yes refl = refl
@@ -70,12 +81,48 @@ dcong₂ f inj d1 d2 with d1
 ... | no  q = no (q ∘ proj₂ ∘ inj)
 ... | yes q = yes (cong₂ f p q)
 
+record Tagᵁ {α} {A : Set α} {b : A -> Level} (B : ∀ x -> Set (b x)) (x : A) : Set (b x) where
+  constructor tag
+  field detag : B x
+  tagOf = x
+open Tagᵁ public
+
+tagWith : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
+        -> (x : A) -> B x -> Tagᵁ B x
+tagWith _ = tag
+
 _>>=ᵀ_ : ∀ {α} {A : Set α} {b : A -> Level}
        -> (mx : Maybe A) -> (B : ∀ x -> Set (b x)) -> Set (maybe b Level.zero mx)
 nothing >>=ᵀ B = ⊤
 just x  >>=ᵀ B = B x
 
+_>>=ᵀᵂ_ : ∀ {α} {A : Set α} {b : A -> Level}
+        -> (mx : Maybe A) -> (B : ∀ x -> Set (b x)) -> Set (maybe b Level.zero mx)
+mx >>=ᵀᵂ B = Tagᵁ (_>>=ᵀ B) mx
+
 _>>=⊤_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
        -> (mx : Maybe A) -> (∀ x -> B x) -> mx >>=ᵀ B
 nothing >>=⊤ f = _
 just x  >>=⊤ f = f x
+
+_>>=⊤ᴾ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
+       -> (mx : Maybe A) -> (∀ {x} -> mx ≡ just x -> B x) -> mx >>=ᵀ B
+nothing >>=⊤ᴾ f = _
+just x  >>=⊤ᴾ f = f refl
+
+_>>=ᵂᴸ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)} {mx}
+        -> mx >>=ᵀᵂ B -> (∀ {x} -> B x -> Level) -> Level
+_>>=ᵂᴸ_ {mx = nothing} y c = Level.zero
+_>>=ᵂᴸ_ {mx = just  _} y c = c (detag y)
+
+_>>=ᵂ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
+           {c : ∀ {x} -> B x -> Level} {mx}
+       -> (y : mx >>=ᵀᵂ B) -> (∀ {x} -> (y : B x) -> Set (c y)) -> Set (y >>=ᵂᴸ c)
+_>>=ᵂ_ {mx = nothing} y C = ⊤
+_>>=ᵂ_ {mx = just  _} y C = C (detag y)
+
+_>>=ʷ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
+           {c : ∀ {x} -> B x -> Level} {C : ∀ {x} -> (y : B x) -> Set (c y)} {mx}
+       -> (y : mx >>=ᵀᵂ B) -> (f : ∀ {x} -> (y : B x) -> C y) -> y >>=ᵂ C
+_>>=ʷ_ {mx = nothing} y f = _
+_>>=ʷ_ {mx = just  _} y f = f (detag y)
