@@ -82,7 +82,7 @@ dcong₂ f inj d1 d2 with d1
 ... | yes q = yes (cong₂ f p q)
 
 elim-maybeᵖ : ∀ {α β} {A : Set α} {B : Maybe A -> Set β}
-       -> (mx : Maybe A) -> (∀ {x} -> mx ≡ just x -> B (just x)) -> B nothing -> B mx
+            -> (mx : Maybe A) -> (∀ {x} -> mx ≡ just x -> B (just x)) -> B nothing -> B mx
 elim-maybeᵖ (just x) f z = f refl
 elim-maybeᵖ nothing  f z = z
 
