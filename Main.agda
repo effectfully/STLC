@@ -23,17 +23,17 @@ open import STLC.Data.Term         public
 run : ∀ {γ} {C : ∀ {Γ σ} -> (e : Γ ⊢ σ) -> Set γ}
     -> (∀ {Γ σ} -> (e : Γ ⊢ σ) -> C e)
     -> (eˢ : Syntax⁽⁾)
-    -> runM eˢ >>=ᵀ λ{ (_ , e) -> C (unʳ (unᵛ e)) }
+    -> runM eˢ >>=ᵗ λ{ {_ , e} _ -> C (unʳ (unᵛ e)) }
 run f eˢ =
-       runM eˢ >>=⊤ λ{ (_ , e) -> f (unʳ (unᵛ e)) }
+       runM eˢ >>=ₜ λ{ {_ , e} _ -> f (unʳ (unᵛ e)) }
 
 term    = run  generalize
 norm    = run (erase ∘ M.normalize)
 norm'   = run (erase ∘ L.normalize)
 
 compile = λ eˢ ->
-  runM eˢ                     >>=⊤ λ{ (_ , e) ->
-  unⁿ (thicken (unʳ (unᵛ e))) >>=ʷ λ y ->
-  y                           >>=⊤ λ x -> x
+  runM eˢ                     >>=ₜ  λ{ {_ , e} _ ->
+  unⁿ (thicken (unʳ (unᵛ e))) >>=ᵣₜ λ my         ->
+  my                          >>=ₜ  λ {y} _      -> y
   }
 eval    = evaluate

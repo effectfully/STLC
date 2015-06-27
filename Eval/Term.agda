@@ -99,5 +99,5 @@ max : Typeⁿ -> ℕ
 max (Var i) = i
 max (σ ⇒ τ) = max σ ⊔ max τ
 
-unⁿ : ∀ {σ} -> Termⁿ σ -> unⁿᵀ (suc (max σ)) σ >>=ᵀᵂ λ σ' -> Maybe (Term σ')
-unⁿ {σ} x = tag (unⁿᵀ (suc (max σ)) σ >>=⊤ᴾ λ p -> unⁿ-go x refl (unfold σ p))
+unⁿ : ∀ {σ} -> Termⁿ σ -> unⁿᵀ (suc (max σ)) σ >>=ʳ λ {σ'} _ -> Maybe (Term σ')
+unⁿ {σ} x = wrapʳ (unⁿᵀ (suc (max σ)) σ >>=ₜ λ r -> unⁿ-go x refl (unfold σ r))

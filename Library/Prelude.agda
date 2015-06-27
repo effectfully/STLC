@@ -81,48 +81,49 @@ dcong₂ f inj d1 d2 with d1
 ... | no  q = no (q ∘ proj₂ ∘ inj)
 ... | yes q = yes (cong₂ f p q)
 
-record Tagᵁ {α} {A : Set α} {b : A -> Level} (B : ∀ x -> Set (b x)) (x : A) : Set (b x) where
-  constructor tag
-  field detag : B x
-  tagOf = x
-open Tagᵁ public
+maybeᵖ : ∀ {α β} {A : Set α} {B : Maybe A -> Set β}
+       -> (mx : Maybe A) -> (∀ {x} -> mx ≡ just x -> B (just x)) -> B nothing -> B mx
+maybeᵖ (just x) j n = j refl
+maybeᵖ nothing  j n = n
 
-tagWith : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
-        -> (x : A) -> B x -> Tagᵁ B x
-tagWith _ = tag
+_>>=ᵗ_ : ∀ {α} {A : Set α}
+        -> (mx : Maybe A)
+           {b : ∀ {x} ->      mx ≡ just x  -> Level}
+        -> (B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r))
+        -> Set (maybeᵖ mx b Level.zero)
+nothing >>=ᵗ B = ⊤
+just x  >>=ᵗ B = B refl
 
-_>>=ᵀ_ : ∀ {α} {A : Set α} {b : A -> Level}
-       -> (mx : Maybe A) -> (B : ∀ x -> Set (b x)) -> Set (maybe b Level.zero mx)
-nothing >>=ᵀ B = ⊤
-just x  >>=ᵀ B = B x
+record _>>=ʳ_ {α} {A : Set α} (mx : Maybe A)
+              {b : ∀ {x} ->      mx ≡ just x  -> Level}
+              (B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r))
+            : Set (maybeᵖ mx b Level.zero) where
+  constructor wrapʳ
+  field runʳ : mx >>=ᵗ B
+open _>>=ʳ_  
 
-_>>=ᵀᵂ_ : ∀ {α} {A : Set α} {b : A -> Level}
-        -> (mx : Maybe A) -> (B : ∀ x -> Set (b x)) -> Set (maybe b Level.zero mx)
-mx >>=ᵀᵂ B = Tagᵁ (_>>=ᵀ B) mx
+_>>=ₜ_ : ∀ {α} {A : Set α}
+       -> (mx : Maybe A)
+          {b : ∀ {x} ->      mx ≡ just x  -> Level}
+          {B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r)}
+       -> (f : ∀ {x} -> (r : mx ≡ just x) -> B r)
+       -> mx >>=ᵗ B
+nothing >>=ₜ f = _
+just x  >>=ₜ f = f refl
 
-_>>=⊤_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
-       -> (mx : Maybe A) -> (∀ x -> B x) -> mx >>=ᵀ B
-nothing >>=⊤ f = _
-just x  >>=⊤ f = f x
+run-byʳ : ∀ {α} {A : Set α} {mx : Maybe A}
+            {b : ∀ {x} ->      mx ≡ just x  -> Level}
+            {B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r)} {x}
+        -> (r : mx ≡ just x) -> mx >>=ʳ B -> B r
+run-byʳ refl = runʳ
 
-_>>=⊤ᴾ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
-       -> (mx : Maybe A) -> (∀ {x} -> mx ≡ just x -> B x) -> mx >>=ᵀ B
-nothing >>=⊤ᴾ f = _
-just x  >>=⊤ᴾ f = f refl
-
-_>>=ᵂᴸ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)} {mx}
-        -> mx >>=ᵀᵂ B -> (∀ {x} -> B x -> Level) -> Level
-_>>=ᵂᴸ_ {mx = nothing} y c = Level.zero
-_>>=ᵂᴸ_ {mx = just  _} y c = c (detag y)
-
-_>>=ᵂ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
-           {c : ∀ {x} -> B x -> Level} {mx}
-       -> (y : mx >>=ᵀᵂ B) -> (∀ {x} -> (y : B x) -> Set (c y)) -> Set (y >>=ᵂᴸ c)
-_>>=ᵂ_ {mx = nothing} y C = ⊤
-_>>=ᵂ_ {mx = just  _} y C = C (detag y)
-
-_>>=ʷ_ : ∀ {α} {A : Set α} {b : A -> Level} {B : ∀ x -> Set (b x)}
-           {c : ∀ {x} -> B x -> Level} {C : ∀ {x} -> (y : B x) -> Set (c y)} {mx}
-       -> (y : mx >>=ᵀᵂ B) -> (f : ∀ {x} -> (y : B x) -> C y) -> y >>=ᵂ C
-_>>=ʷ_ {mx = nothing} y f = _
-_>>=ʷ_ {mx = just  _} y f = f (detag y)
+_>>=ᵣₜ_ : ∀ {α} {A : Set α} {mx : Maybe A}
+            {b : ∀ {x} ->      mx ≡ just x  -> Level}
+            {B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r)}
+            {c : ∀ {x} {r : mx ≡ just x} ->      B r  -> Level}
+            {C : ∀ {x} {r : mx ≡ just x} -> (y : B r) -> Set (c y)}
+        -> (y : mx >>=ʳ B)
+        -> (∀ {x} {r : mx ≡ just x} -> (y : B r) -> C y)
+        -> mx >>=ᵗ λ r -> C (run-byʳ r y)
+_>>=ᵣₜ_ {mx = nothing} y g = _
+_>>=ᵣₜ_ {mx = just  _} y g = g (runʳ y)
