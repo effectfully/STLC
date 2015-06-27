@@ -81,23 +81,23 @@ dcong₂ f inj d1 d2 with d1
 ... | no  q = no (q ∘ proj₂ ∘ inj)
 ... | yes q = yes (cong₂ f p q)
 
-maybeᵖ : ∀ {α β} {A : Set α} {B : Maybe A -> Set β}
+elim-maybeᵖ : ∀ {α β} {A : Set α} {B : Maybe A -> Set β}
        -> (mx : Maybe A) -> (∀ {x} -> mx ≡ just x -> B (just x)) -> B nothing -> B mx
-maybeᵖ (just x) j n = j refl
-maybeᵖ nothing  j n = n
+elim-maybeᵖ (just x) f z = f refl
+elim-maybeᵖ nothing  f z = z
 
 _>>=ᵗ_ : ∀ {α} {A : Set α}
         -> (mx : Maybe A)
            {b : ∀ {x} ->      mx ≡ just x  -> Level}
         -> (B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r))
-        -> Set (maybeᵖ mx b Level.zero)
+        -> Set (elim-maybeᵖ mx b Level.zero)
 nothing >>=ᵗ B = ⊤
 just x  >>=ᵗ B = B refl
 
 record _>>=ʳ_ {α} {A : Set α} (mx : Maybe A)
               {b : ∀ {x} ->      mx ≡ just x  -> Level}
               (B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r))
-            : Set (maybeᵖ mx b Level.zero) where
+            : Set (elim-maybeᵖ mx b Level.zero) where
   constructor wrapʳ
   field runʳ : mx >>=ᵗ B
 open _>>=ʳ_  
