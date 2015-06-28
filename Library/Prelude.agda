@@ -86,6 +86,8 @@ elim-maybeᵖ : ∀ {α β} {A : Set α} {B : Maybe A -> Set β}
 elim-maybeᵖ (just x) f z = f refl
 elim-maybeᵖ nothing  f z = z
 
+infixl 3 _>>=ᵗ_ _>>=ₜ_ _>>=ʳ_ _>>=ᵣₜ_
+
 _>>=ᵗ_ : ∀ {α} {A : Set α}
         -> (mx : Maybe A)
            {b : ∀ {x} ->      mx ≡ just x  -> Level}
@@ -111,11 +113,11 @@ record _>>=ʳ_ {α} {A : Set α} (mx : Maybe A)
   field runʳ : mx >>=ᵗ B
 open _>>=ʳ_  
 
-run-byʳ : ∀ {α} {A : Set α} {mx : Maybe A}
+reduceᵗ : ∀ {α} {A : Set α} {mx : Maybe A}
             {b : ∀ {x} ->      mx ≡ just x  -> Level}
             {B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r)} {x}
-        -> (r : mx ≡ just x) -> mx >>=ʳ B -> B r
-run-byʳ refl = runʳ
+        -> mx >>=ᵗ B -> (r : mx ≡ just x) -> B r
+reduceᵗ y refl = y
 
 _>>=ᵣₜ_ : ∀ {α} {A : Set α} {mx : Maybe A}
             {b : ∀ {x} ->      mx ≡ just x  -> Level}
@@ -124,6 +126,6 @@ _>>=ᵣₜ_ : ∀ {α} {A : Set α} {mx : Maybe A}
             {C : ∀ {x} {r : mx ≡ just x} -> (y : B r) -> Set (c y)}
         -> (y : mx >>=ʳ B)
         -> (∀ {x} {r : mx ≡ just x} -> (y : B r) -> C y)
-        -> mx >>=ᵗ λ r -> C (run-byʳ r y)
+        -> mx >>=ᵗ λ r -> C (reduceᵗ (runʳ y) r)
 _>>=ᵣₜ_ {mx = nothing} y g = _
 _>>=ᵣₜ_ {mx = just  _} y g = g (runʳ y)
