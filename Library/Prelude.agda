@@ -94,14 +94,6 @@ _>>=ᵗ_ : ∀ {α} {A : Set α}
 nothing >>=ᵗ B = ⊤
 just x  >>=ᵗ B = B refl
 
-record _>>=ʳ_ {α} {A : Set α} (mx : Maybe A)
-              {b : ∀ {x} ->      mx ≡ just x  -> Level}
-              (B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r))
-            : Set (elim-maybeᵖ mx b Level.zero) where
-  constructor wrapʳ
-  field runʳ : mx >>=ᵗ B
-open _>>=ʳ_  
-
 _>>=ₜ_ : ∀ {α} {A : Set α}
        -> (mx : Maybe A)
           {b : ∀ {x} ->      mx ≡ just x  -> Level}
@@ -110,6 +102,14 @@ _>>=ₜ_ : ∀ {α} {A : Set α}
        -> mx >>=ᵗ B
 nothing >>=ₜ f = _
 just x  >>=ₜ f = f refl
+
+record _>>=ʳ_ {α} {A : Set α} (mx : Maybe A)
+              {b : ∀ {x} ->      mx ≡ just x  -> Level}
+              (B : ∀ {x} -> (r : mx ≡ just x) -> Set (b r))
+            : Set (elim-maybeᵖ mx b Level.zero) where
+  constructor wrapʳ
+  field runʳ : mx >>=ᵗ B
+open _>>=ʳ_  
 
 run-byʳ : ∀ {α} {A : Set α} {mx : Maybe A}
             {b : ∀ {x} ->      mx ≡ just x  -> Level}
