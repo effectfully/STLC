@@ -1,4 +1,4 @@
-module STLC.Library.Sets where
+module STLC.Lib.Sets where
 
 open import Level as L
 open import Function

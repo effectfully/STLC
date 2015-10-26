@@ -7,47 +7,58 @@ open import STLC.Main
 I : Pure
 I = pure (1 # λ x → x)
 
-Iᵀ : _
-Iᵀ = term I
+Iᵀ : ∀ {a} -> Term⁽⁾ (a ⇒ a)
+Iᵀ = generalize (core (proj₂ (proj₂ (from-just (infer I))))) -- term I
 
-Iᵀ' : Term (a ⇒ a)
-Iᵀ' = term (I · I)
+Iᵀ' : ∀ {α} {A : Set α} -> A -> A
+Iᵀ' = eval (term (I · I))
 
-ω : Pure 
+ω : Pure
 ω = pure (1 # λ x → x · x)
 
-Ωᵀ : ⊤
-Ωᵀ = term (ω · ω)
+-- Ωᵀ : _
+-- Ωᵀ = term ω
 
-applicator : Term ((a ⇒ b) ⇒ a ⇒ b)
+-- Ωᵀ : _
+-- Ωᵀ = term (ω · ω)
+
+applicator : _ -- ∀ {a b} -> Term⁽⁾ ((a ⇒ b) ⇒ a ⇒ b)
 applicator = term (2 # λ a b → a · b)
 
-applicator' : Term ((b ⇒ a) ⇒ b ⇒ a)
-applicator' = term (2 # λ a b → a · b)
+A : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
+A = eval applicator
 
-applicator-speсialized : Term (((b ⇒ c) ⇒ a) ⇒ (b ⇒ c) ⇒ a)
-applicator-speсialized = term (2 # λ a b → a · b)
+-- generalize (core (proj₂ (proj₂ (from-just (infer (2 # λ a b → a · b))))))
+-- term (2 # λ a b → a · b)
 
-applicator-generic : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
-applicator-generic = term (2 # λ a b → a · b)
+-- applicator' : _ -- Term ((b ⇒ a) ⇒ b ⇒ a)
+-- applicator' = term (2 # λ a b → a · b)
 
-applicator-generic-specialized : ∀ {a} -> Term ((a ⇒ a) ⇒ a ⇒ a)
-applicator-generic-specialized = applicator-generic
+-- applicator-speсialized : _ -- Term (((b ⇒ c) ⇒ a) ⇒ (b ⇒ c) ⇒ a)
+-- applicator-speсialized = term (2 # λ a b → a · b)
 
-cardinal : Term ((a ⇒ b ⇒ c) ⇒ b ⇒ a ⇒ c)
-cardinal = term (3 # λ a b c → a · c · b)
+-- applicator-generic : _ -- ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
+-- applicator-generic = term (2 # λ a b → a · b)
 
-owl : Term (((a ⇒ b) ⇒ a) ⇒ (a ⇒ b) ⇒ b)
-owl = term (2 # λ a b → b · (a · b))
+-- applicator-generic-specialized : _ -- ∀ {a} -> Term ((a ⇒ a) ⇒ a ⇒ a)
+-- applicator-generic-specialized = applicator-generic
 
-quacky : Term (a ⇒ (a ⇒ b) ⇒ (b ⇒ c) ⇒ c)
-quacky = term (3 # λ a b c → c · (b · a))
+-- cardinal : _ -- Term ((a ⇒ b ⇒ c) ⇒ b ⇒ a ⇒ c)
+-- cardinal = term (3 # λ a b c → a · c · b)
 
-psi : Term ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
-psi = term (4 # λ a b c d → a · (b · c) · (b · d))
+-- owl : _ -- Term (((a ⇒ b) ⇒ a) ⇒ (a ⇒ b) ⇒ b)
+-- owl = term (2 # λ a b → b · (a · b))
 
-phoenix : Term ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
-phoenix = term (4 # λ a b c d → a · (b · d) · (c · d))
+-- quacky : _ -- Term (a ⇒ (a ⇒ b) ⇒ (b ⇒ c) ⇒ c)
+-- quacky = term (3 # λ a b c → c · (b · a))
 
-eaglebald : Term ((e ⇒ f ⇒ g) ⇒ (a ⇒ b ⇒ e) ⇒ a ⇒ b ⇒ (c ⇒ d ⇒ f) ⇒ c ⇒ d ⇒ g)
-eaglebald = term (7 # λ a b c d e f g → a · (b · c · d) · (e · f · g))
+-- psi : _ -- Term ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
+-- psi = term (4 # λ a b c d → a · (b · c) · (b · d))
+
+-- phoenix : ∀ {a b c d} -> Term⁽⁾ ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
+-- phoenix = generalize (core (proj₂ (proj₂ (from-just (infer
+--   (4 # λ a b c d → a · (b · d) · (c · d)))))))
+-- -- term (4 # λ a b c d → a · (b · d) · (c · d))
+
+-- eaglebald : ∀ {a b c d e f g} -> Term⁽⁾ ((e ⇒ f ⇒ g) ⇒ (a ⇒ b ⇒ e) ⇒ a ⇒ b ⇒ (c ⇒ d ⇒ f) ⇒ c ⇒ d ⇒ g)
+-- eaglebald = term (7 # λ a b c d e f g → a · (b · c · d) · (e · f · g))
