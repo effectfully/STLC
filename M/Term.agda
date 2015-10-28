@@ -47,12 +47,6 @@ lookupᶜ-∈ : ∀ {n l} i -> (Γ : Con n l) -> lookupᶜ i Γ ∈ Γ
 lookupᶜ-∈  zero   (Γ ▻ σ) = vz
 lookupᶜ-∈ (suc i) (Γ ▻ σ) = vs (lookupᶜ-∈ i Γ)
 
-mapᶜ-mapᶜ : ∀ {n m p l} {g : Type m -> Type p} {f : Type n -> Type m} (Γ : Con n l)
-          -> mapᶜ g (mapᶜ f Γ) ≡ mapᶜ (g ∘ f) Γ
-mapᶜ-mapᶜ  ε      = refl
-mapᶜ-mapᶜ (Γ ▻ σ) = cong (_▻ _) (mapᶜ-mapᶜ Γ)
-{-# REWRITE mapᶜ-mapᶜ #-}
-
 coerceBy : ∀ {n l σ τ} {Γ : Con n l} -> σ ≡ τ -> Γ ⊢ σ -> Γ ⊢ τ
 coerceBy refl = id
 
@@ -66,3 +60,9 @@ specialize : ∀ {n m l σ} {Γ : Con n l}
 specialize Ψ (var v) = var (specializeᵛ Ψ v)
 specialize Ψ (ƛ b)   = ƛ (specialize Ψ b)
 specialize Ψ (f · x) = specialize Ψ f · specialize Ψ x
+
+mapᶜ-mapᶜ : ∀ {n m p l} {g : Type m -> Type p} {f : Type n -> Type m} (Γ : Con n l)
+          -> mapᶜ g (mapᶜ f Γ) ≡ mapᶜ (g ∘ f) Γ
+mapᶜ-mapᶜ  ε      = refl
+mapᶜ-mapᶜ (Γ ▻ σ) = cong (_▻ _) (mapᶜ-mapᶜ Γ)
+{-# REWRITE mapᶜ-mapᶜ #-}

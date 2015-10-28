@@ -21,8 +21,7 @@ from-^ : ∀ {n α} {A : Set α} -> A ^ n -> Vec A n
 from-^ {0}      _       = []
 from-^ {suc _} (x , xs) = x ∷ from-^ xs
 
-on-^ : ∀ {α β n} {A : Set α} {B : Vec A n -> Set β}
-     -> (∀ xs -> B xs) -> ∀ xs -> B (from-^ xs)
+on-^ : ∀ {α β n} {A : Set α} {B : Vec A n -> Set β} -> (∀ xs -> B xs) -> ∀ xs -> B (from-^ xs)
 on-^ f = f ∘ from-^
 
 mono-^ : ∀ {α n m} {A : Set α} -> (Vec A n -> Vec A m) -> A ^ n -> A ^ m

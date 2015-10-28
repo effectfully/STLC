@@ -5,26 +5,16 @@ open import STLC.Core.Syntax
 open import STLC.Core.Type
 open import STLC.M.Term
 
-{-# TERMINATING #-}
-U : ∀ {n} -> (σ τ : Type n) -> Maybe (∃ λ (Ψ : Subst n n) -> apply Ψ σ ≡ apply Ψ τ)
-U (Var i)   (Var j)   = drec (λ p -> just (Var , cong Var p)) (const (sub i (Var j))) (i ≟ j)
-U (Var i)    τ        = sub i τ
-U  σ        (Var j)   = pmap id sym <$> sub j σ
-U (σ₁ ⇒ τ₁) (σ₂ ⇒ τ₂) =
-  U  σ₁           σ₂          >>= λ{ (Ψ , p) ->
-  U (apply Ψ τ₁) (apply Ψ τ₂) >>= λ{ (Φ , q) ->
-  just (apply Φ ∘ Ψ , cong₂ _⇒_ (cong (apply Φ) p) q)
-  }}
-
+-- `specialize' as a constructor?
 M : ∀ {n l} -> (Γ : Con n l) -> Syntax l -> (σ : Type n)
   -> Maybe (∃ λ m -> ∃ λ (Ψ : Subst n m) -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ)
 M Γ (var i)   σ =
-  U σ (lookupᶜ i Γ)
+  unify σ (lookupᶜ i Γ)
     >>= λ{ (Ψ , p) ->
   just (, Ψ , coerceBy (sym p) (specialize Ψ (var (lookupᶜ-∈ i Γ))))
   }
 M Γ (ƛ bˢ)    σ =
-  U (renᵗ 2 σ) (Var zero ⇒ Var (suc zero))
+  unify (renᵗ 2 σ) (Var zero ⇒ Var (suc zero))
     >>= λ{ (Ψ , p)     ->
   M (mapᶜ (apply (Ψ ∘ raise 2)) Γ ▻ apply Ψ (Var zero)) bˢ (apply Ψ (Var (suc zero)))
     >>= λ{ (_ , Φ , b) ->

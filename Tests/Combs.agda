@@ -2,34 +2,28 @@ module STLC.Tests.Combs where
 
 open import STLC.Main
 
--- You can omit type signatures.
-
 I : Pure
 I = pure (1 # λ x → x)
 
-Iᵀ : ∀ {a} -> Term⁽⁾ (a ⇒ a)
-Iᵀ = generalize (core (proj₂ (proj₂ (from-just (infer I))))) -- term I
-
-Iᵀ' : ∀ {α} {A : Set α} -> A -> A
-Iᵀ' = eval (term (I · I))
+-- λ {.n} → ƛ var zero
+I' : Pure
+I' = normᵖ (I · I)
 
 ω : Pure
 ω = pure (1 # λ x → x · x)
 
--- Ωᵀ : _
--- Ωᵀ = term ω
+-- Should we remove this `Lift' or it doesn't matter?
+Ωᵀ : Lift ⊤
+Ωᵀ = typify (ω · ω)
 
--- Ωᵀ : _
--- Ωᵀ = term (ω · ω)
-
-applicator : _ -- ∀ {a b} -> Term⁽⁾ ((a ⇒ b) ⇒ a ⇒ b)
-applicator = term (2 # λ a b → a · b)
+applicator : Term⁽⁾ ((Var zero ⇒ Var (suc zero)) ⇒ Var zero ⇒ Var (suc zero))
+applicator = typify (2 # λ a b → a · b)
 
 A : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
 A = eval applicator
 
--- generalize (core (proj₂ (proj₂ (from-just (infer (2 # λ a b → a · b))))))
--- term (2 # λ a b → a · b)
+gapplicator : ∀ {a b} -> Term⁽⁾ ((a ⇒ b) ⇒ a ⇒ b)
+gapplicator = generalize applicator
 
 -- applicator' : _ -- Term ((b ⇒ a) ⇒ b ⇒ a)
 -- applicator' = term (2 # λ a b → a · b)
@@ -61,4 +55,4 @@ A = eval applicator
 -- -- term (4 # λ a b c d → a · (b · d) · (c · d))
 
 -- eaglebald : ∀ {a b c d e f g} -> Term⁽⁾ ((e ⇒ f ⇒ g) ⇒ (a ⇒ b ⇒ e) ⇒ a ⇒ b ⇒ (c ⇒ d ⇒ f) ⇒ c ⇒ d ⇒ g)
--- eaglebald = term (7 # λ a b c d e f g → a · (b · c · d) · (e · f · g))
+-- eaglebald = generalize (term (7 # λ a b c d e f g → a · (b · c · d) · (e · f · g)))

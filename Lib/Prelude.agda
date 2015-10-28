@@ -1,7 +1,7 @@
 module STLC.Lib.Prelude where
 
 open import Level                      renaming (zero to lzero; suc to lsuc)    public
-open import Function                                                            public
+open import Function                   hiding (_∋_)                             public
 open import Relation.Nullary                                                    public
 open import Relation.Nullary.Decidable hiding (map)                             public
 open import Relation.Binary            hiding (_⇒_)                             public
@@ -11,6 +11,7 @@ open import Data.Unit.Base             hiding (_≤_; module _≤_)             
 open import Data.Bool.Base                                                      public
 open import Data.Nat.Base              hiding (_⊔_; erase)                      public
 open import Data.Fin                   hiding (_+_; _<_; _≤_; fold; lift; pred) public
+open import Data.Sum                   renaming (map to smap)                   public
 open import Data.Maybe.Base            hiding (map)                             public
 open import Data.List.Base             hiding ([_]; zip; fromMaybe)             public
 open import Data.Vec                   using (lookup)                           public
@@ -91,17 +92,16 @@ delete x xs = fromMaybe xs (deletem x xs)
 nub : ∀ {α} {A : Set α} {{_ : DecEq A}} -> List A -> List A
 nub = foldr (λ x r -> x ∷ delete x r) []
 
-enumerateᶜ : ∀ {α} {A : Set α}
-           -> (k : ℕ -> ℕ)
-           -> (∀ {n} -> Fin (k n) -> Fin (k (suc n)))
-           -> (∀ {n} -> Fin (k (suc n)))
-           -> (xs : List A)
-           -> List (Fin (k (length xs)) × A)
-enumerateᶜ k s i  []      = []
-enumerateᶜ k s i (x ∷ xs) = (i , x) ∷ enumerateᶜ (k ∘ suc) s (s i) xs
-
 enumerate : ∀ {α} {A : Set α} -> (xs : List A) -> List (Fin (length xs) × A)
-enumerate = enumerateᶜ id suc zero
+enumerate = go id suc zero where
+  go : ∀ {α} {A : Set α}
+     -> (k : ℕ -> ℕ)
+     -> (∀ {n} -> Fin (k n) -> Fin (k (suc n)))
+     -> (∀ {n} -> Fin (k (suc n)))
+     -> (xs : List A)
+     -> List (Fin (k (length xs)) × A)
+  go k s i  []      = []
+  go k s i (x ∷ xs) = (i , x) ∷ go (k ∘ suc) s (s i) xs
 
 Associate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
           -> List A -> (A -> B) -> ((A -> B) -> Set β) -> Set β
