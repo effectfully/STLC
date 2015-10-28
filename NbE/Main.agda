@@ -7,7 +7,7 @@ open import STLC.Core.Semantics
 open import STLC.NbE.NF
 
 infix  4 _⊨_ _⊨*_
--- infixl 6 _·ᵐ_
+infixl 6 _·ᵐ_
 
 mutual
   _⊨_ : Links
@@ -16,9 +16,6 @@ mutual
   _⊨*_ : Links
   Γ ⊨* Var i = ⊥
   Γ ⊨* σ ⇒ τ = ∀ {Δ} -> Γ ⊆ Δ -> Δ ⊨ σ -> Δ ⊨ τ
-
--- neᵐ : _⊢ⁿᵉ_ ∸> _⊨_
--- neᵐ = inj₁
 
 varᵐ : _∋_ ∸> _⊨_
 varᵐ = inj₁ ∘ varⁿᵉ
@@ -33,7 +30,7 @@ renᵐ             ι (inj₁ n)  = inj₁ (renⁿᵉ ι n)
 renᵐ {σ = Var i} ι (inj₂ ())
 renᵐ {σ = σ ⇒ τ} ι (inj₂ k)  = inj₂ (renᵏ ι k)
 
-readback : ∀ {n σ} {Γ : Con n} -> Γ ⊨ σ -> Γ ⊢ⁿᶠ σ
+readback : _⊨_ ∸> _⊢ⁿᶠ_
 readback             (inj₁ n)  = neⁿᶠ n
 readback {σ = Var i} (inj₂ ())
 readback {σ = σ ⇒ τ} (inj₂ k)  = ƛⁿᶠ (readback (apᵏ k))
