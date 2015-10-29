@@ -5,7 +5,7 @@ open import Function                   hiding (_∋_)                           
 open import Relation.Nullary                                                    public
 open import Relation.Nullary.Decidable hiding (map)                             public
 open import Relation.Binary            hiding (_⇒_)                             public
-open import Relation.Binary.PropositionalEquality                               public
+open import Relation.Binary.PropositionalEquality hiding ([_])                  public
 open import Data.Empty                                                          public
 open import Data.Unit.Base             hiding (_≤_; module _≤_)                 public
 open import Data.Bool.Base                                                      public

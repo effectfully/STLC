@@ -5,13 +5,17 @@ open import STLC.Core.Syntax
 open import STLC.Core.Type
 
 infixl 5 _▻_
-infix  4 _∈_ _⊆_ _⊢_
+infix  4 _∈_ _⊆_ _⊢_ _⊂[_]_
 infixr 3 ƛ_
 infixl 6 _·_
 
 data Con n : Set where
   ε   : Con n
   _▻_ : Con n -> Type n -> Con n
+
+data _⊂[_]_ {n} Γ σ : Con n -> Set where
+  vtop  :            Γ ⊂[ σ ] Γ ▻ σ
+  vskip : ∀ {Δ τ} -> Γ ⊂[ σ ] Δ     -> Γ ⊂[ σ ] Δ ▻ τ
 
 data _⊆_ {n} : Con n -> Con n -> Set where
   stop : ∀ {Γ}     -> Γ ⊆ Γ
@@ -75,6 +79,10 @@ renᵛ (skip ι)  v     = vs (renᵛ ι v)
 renᵛ (keep ι)  vz    = vz
 renᵛ (keep ι) (vs v) = vs (renᵛ ι v)
 
+⊂[]-to-∈ : ∀ {n σ} {Γ Δ : Con n} -> Γ ⊂[ σ ] Δ -> σ ∈ Δ
+⊂[]-to-∈  vtop     = vz
+⊂[]-to-∈ (vskip p) = vs (⊂[]-to-∈ p)
+
 ∈-to-Fin : ∀ {n σ} {Γ : Con n} -> σ ∈ Γ -> Fin (lenᶜ Γ)
 ∈-to-Fin  vz    = zero
 ∈-to-Fin (vs v) = suc (∈-to-Fin v)
@@ -115,9 +123,3 @@ thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
 thicken {σ = σ} = specialize λ i ->
   maybe Var undefined (lookup-for i (map swap (enumerate (ftv σ))))
     where postulate undefined : _
-
-foldrᶜ-mapᶜ : ∀ {α n m} {A : Set α} {g : Type m -> A -> A} {f : Type n -> Type m} {z} Γ
-            -> foldrᶜ g z (mapᶜ f Γ) ≡ foldrᶜ (g ∘ f) z Γ
-foldrᶜ-mapᶜ              ε      = refl
-foldrᶜ-mapᶜ {g = g} {f} (Γ ▻ σ) = cong (g (f σ)) (foldrᶜ-mapᶜ Γ)
--- {-# REWRITE foldrᶜ-mapᶜ #-}

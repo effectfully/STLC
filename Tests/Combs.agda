@@ -19,11 +19,14 @@ I' = normᵖ (I · I)
 applicator : Term⁽⁾ ((Var zero ⇒ Var (suc zero)) ⇒ Var zero ⇒ Var (suc zero))
 applicator = typify (2 # λ a b → a · b)
 
+applicator' : Term⁽⁾ ((Var zero ⇒ Var (suc (zero {0}))) ⇒ Var zero ⇒ Var (suc zero))
+applicator' = read _$_
+
 A : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
 A = eval applicator
 
-gapplicator : ∀ {a b} -> Term⁽⁾ ((a ⇒ b) ⇒ a ⇒ b)
-gapplicator = generalize applicator
+gapplicator : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
+gapplicator = term (generalize applicator)
 
 -- applicator' : _ -- Term ((b ⇒ a) ⇒ b ⇒ a)
 -- applicator' = term (2 # λ a b → a · b)
