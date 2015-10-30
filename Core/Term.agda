@@ -73,12 +73,6 @@ keep κ ∘ˢ stop   = keep κ
 keep κ ∘ˢ skip ι = skip (κ ∘ˢ ι)
 keep κ ∘ˢ keep ι = keep (κ ∘ˢ ι)
 
-renᵛ : Renames _∋_
-renᵛ  stop     v     = v
-renᵛ (skip ι)  v     = vs (renᵛ ι v)
-renᵛ (keep ι)  vz    = vz
-renᵛ (keep ι) (vs v) = vs (renᵛ ι v)
-
 ⊂[]-to-∈ : ∀ {n σ} {Γ Δ : Con n} -> Γ ⊂[ σ ] Δ -> σ ∈ Δ
 ⊂[]-to-∈  vtop     = vz
 ⊂[]-to-∈ (vskip p) = vs (⊂[]-to-∈ p)
@@ -86,6 +80,12 @@ renᵛ (keep ι) (vs v) = vs (renᵛ ι v)
 ∈-to-Fin : ∀ {n σ} {Γ : Con n} -> σ ∈ Γ -> Fin (lenᶜ Γ)
 ∈-to-Fin  vz    = zero
 ∈-to-Fin (vs v) = suc (∈-to-Fin v)
+
+renᵛ : Renames _∋_
+renᵛ  stop     v     = v
+renᵛ (skip ι)  v     = vs (renᵛ ι v)
+renᵛ (keep ι)  vz    = vz
+renᵛ (keep ι) (vs v) = vs (renᵛ ι v)
 
 erase : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> Syntax (lenᶜ Γ)
 erase (var v) = var (∈-to-Fin v)

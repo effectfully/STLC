@@ -7,7 +7,7 @@ open import STLC.Core.Properties
 open import STLC.NbE.NF
 
 Ne : ∀ {n} -> Type n -> Set
-Ne σ = ∀ {Γ} -> Γ ⊢ⁿᵉ σ
+Ne σ = Wrap (∀ {Γ} -> Γ ⊢ⁿᵉ σ)
 
 NF : ∀ {n} -> Type n -> Set
 NF σ = ∀ {Γ} -> Γ ⊢ⁿᶠ σ
@@ -19,14 +19,20 @@ NF σ = ∀ {Γ} -> Γ ⊢ⁿᶠ σ
 mutual
   ↑ : ∀ {n} {σ : Type n} -> Ne σ -> ⟦ σ ⟧
   ↑ {σ = Var i} n = n
-  ↑ {σ = σ ⇒ τ} f = λ x -> ↑ (f ·ⁿᵉ ↓ x)
+  ↑ {σ = σ ⇒ τ} f = λ x -> ↑ (wrap (unwrap f ·ⁿᵉ ↓ x))
 
   ↓ : ∀ {n} {σ : Type n} -> ⟦ σ ⟧ -> NF σ
-  ↓ {σ = Var i} n = neⁿᶠ n
-  ↓ {σ = σ ⇒ τ} f = λ {Γ} -> ƛⁿᶠ (↓ (f (↑ (λ {Δ} -> varⁿᵉ (diff Δ Γ σ))))) where
+  ↓ {σ = Var i} n = neⁿᶠ (unwrap n)
+  ↓ {σ = σ ⇒ τ} f = λ {Γ} -> ƛⁿᶠ (↓ (f (↑ (wrap λ {Δ} -> varⁿᵉ (diff Δ Γ σ))))) where
     diff : ∀ Δ Γ σ -> σ ∈ Δ
     diff Δ Γ σ = drec ⊂[]-to-∈ impossible (Γ ⊂? Δ)  where
       postulate impossible : _
 
 read : ∀ {n} {σ : Type n} -> ⟦ σ ⟧ -> Term σ
 read x = term (embⁿᶠ (↓ x {ε}))
+
+inst : ∀ n {F : N-ary n Set Set} -> ∀ⁿ n F -> F $ᵗⁿ tabulate {n} (Ne ∘ Var)
+inst n f = f $ⁿ tabulate {n} (Ne ∘ Var)
+
+instʰ : ∀ n {F : N-ary n Set Set} -> ∀ⁿʰ n F -> F $ᵗⁿ tabulate {n} (Ne ∘ Var)
+instʰ n y = y $ⁿʰ tabulate {n} (Ne ∘ Var)

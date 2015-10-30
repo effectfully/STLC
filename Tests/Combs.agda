@@ -28,6 +28,12 @@ A = eval applicator
 gapplicator : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
 gapplicator = term (generalize applicator)
 
+mono-app : {A B : Set} -> (A -> B) -> A -> B
+mono-app f x = f x
+
+poly-app : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
+poly-app = eval (read (inst 2 λ A B -> mono-app {A} {B}))
+
 -- applicator' : _ -- Term ((b ⇒ a) ⇒ b ⇒ a)
 -- applicator' = term (2 # λ a b → a · b)
 

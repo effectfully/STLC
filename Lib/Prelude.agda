@@ -14,7 +14,8 @@ open import Data.Fin                   hiding (_+_; _<_; _≤_; fold; lift; pred
 open import Data.Sum                   renaming (map to smap)                   public
 open import Data.Maybe.Base            hiding (map)                             public
 open import Data.List.Base             hiding ([_]; zip; fromMaybe)             public
-open import Data.Vec                   using (lookup)                           public
+open import Data.Vec                   using (Vec; []; _∷_; lookup; tabulate)   public
+open import Data.Vec.N-ary             renaming (_$ⁿ_ to _$ᵗⁿ_)                 public
 
 open import STLC.Lib.NoEtaProduct      renaming (map to pmap)                   public
 
@@ -25,6 +26,11 @@ open import Category.Monad
 import Data.Maybe as Maybe
 
 private open module Dummy {α} = RawMonad {α} Maybe.monad hiding (pure; zipWith) public
+
+record Wrap {α} (A : Set α) : Set α where
+  constructor wrap
+  field unwrap : A
+open Wrap public
 
 right : ∀ {α} {A : Set α} {x y z : A} -> x ≡ z -> y ≡ z -> x ≡ y
 right p q rewrite q = p
@@ -107,6 +113,14 @@ Associate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
           -> List A -> (A -> B) -> ((A -> B) -> Set β) -> Set β
 Associate  []      inj C = C inj
 Associate (x ∷ xs) inj C = ∀ {y} -> Associate xs inj λ c -> C λ x' -> if x == x' then y else c x'
+
+_$ⁿ_ : ∀ {α β n} {A : Set α} {F : N-ary n A (Set β)} -> ∀ⁿ n F -> (xs : Vec _ n) -> F $ᵗⁿ xs
+y $ⁿ  []      = y
+f $ⁿ (x ∷ xs) = f x $ⁿ xs
+
+_$ⁿʰ_ : ∀ {α β n} {A : Set α} {F : N-ary n A (Set β)} -> ∀ⁿʰ n F -> (xs : Vec _ n) -> F $ᵗⁿ xs
+y $ⁿʰ  []      = y
+y $ⁿʰ (x ∷ xs) = y $ⁿʰ xs
 
 module Membership where
   infix 4 _∈_ _∉_
