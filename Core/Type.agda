@@ -24,6 +24,9 @@ apply : ∀ {n m} -> Subst n m -> Type n -> Type m
 apply Ψ (Var i) = Ψ i
 apply Ψ (σ ⇒ τ) = apply Ψ σ ⇒ apply Ψ τ
 
+wkᵗ : ∀ {m n} -> Type n -> Type (n + m)
+wkᵗ = apply (Var ∘ inject+ _)
+
 renᵗ : ∀ {n} m -> Type n -> Type (m + n)
 renᵗ m = apply (Var ∘ raise m)
 

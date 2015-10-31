@@ -14,7 +14,7 @@ data Syntax n : Set where
 Syntax⁽⁾ : Set
 Syntax⁽⁾ = Syntax 0
 
-wkˢ : ∀ {n m} -> Syntax n -> Syntax (n + m)
+wkˢ : ∀ {m n} -> Syntax n -> Syntax (n + m)
 wkˢ (var i) = var (inject+ _ i)
 wkˢ (ƛ b)   = ƛ (wkˢ b)
 wkˢ (f · x) = wkˢ f · wkˢ x

@@ -4,7 +4,7 @@ open import STLC.Lib.Prelude
 open import STLC.Core.Syntax
 open import STLC.Core.Type
 
-infixl 5 _▻_
+infixl 5 _▻_ _▻▻_
 infix  4 _∈_ _⊆_ _⊢_ _⊂[_]_
 infixr 3 ƛ_
 infixl 6 _·_
@@ -31,12 +31,6 @@ data _⊢_ {n} Γ : Type n -> Set where
   ƛ_  : ∀ {σ τ} -> Γ ▻ σ ⊢ τ -> Γ ⊢ σ ⇒ τ
   _·_ : ∀ {σ τ} -> Γ ⊢ σ ⇒ τ -> Γ ⊢ σ     -> Γ ⊢ τ
 
-Term⁽⁾ : ∀ {n} -> Type n -> Set
-Term⁽⁾ σ = ε ⊢ σ
-
-Term : ∀ {n} -> Type n -> Set
-Term σ = ∀ {Γ} -> Γ ⊢ σ
-
 Links : Set₁
 Links = ∀ {n} -> Con n -> Type n -> Set
 
@@ -58,6 +52,9 @@ mapᶜ f = foldrᶜ (λ σ Γ -> Γ ▻ f σ) ε
 
 lenᶜ : ∀ {n} -> Con n -> ℕ
 lenᶜ = foldrᶜ (const suc) 0
+
+_▻▻_ : ∀ {n} -> Con n -> Con n -> Con n
+_▻▻_ = foldrᶜ (flip _▻_)
 
 top : ∀ {n σ} {Γ : Con n} -> Γ ⊆ Γ ▻ σ
 top = skip stop
@@ -81,24 +78,42 @@ keep κ ∘ˢ keep ι = keep (κ ∘ˢ ι)
 ∈-to-Fin  vz    = zero
 ∈-to-Fin (vs v) = suc (∈-to-Fin v)
 
+wkᵛ : ∀ {n σ} {Δ Γ : Con n} -> σ ∈ Γ -> σ ∈ Δ ▻▻ Γ
+wkᵛ  vz    = vz
+wkᵛ (vs v) = vs (wkᵛ v)
+
 renᵛ : Renames _∋_
 renᵛ  stop     v     = v
 renᵛ (skip ι)  v     = vs (renᵛ ι v)
 renᵛ (keep ι)  vz    = vz
 renᵛ (keep ι) (vs v) = vs (renᵛ ι v)
 
+Term⁽⁾ : ∀ {n} -> Type n -> Set
+Term⁽⁾ σ = ε ⊢ σ
+
+Term : ∀ {n} -> Type n -> Set
+Term σ = ∀ {Γ} -> Γ ⊢ σ
+
+Term⁺ : ∀ {m} n {Ψ} -> Type (n + m) -> Set
+Term⁺ n {Ψ} σ = ∀ {Γ : Con n} -> mapᶜ (apply Ψ) Γ ⊢ σ
+
 erase : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> Syntax (lenᶜ Γ)
 erase (var v) = var (∈-to-Fin v)
 erase (ƛ b)   = ƛ (erase b)
 erase (f · x) = erase f · erase x
 
+upper : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> ℕ
+upper {n} _ = n
+
+wk : ∀ {n σ} {Δ Γ : Con n} -> Γ ⊢ σ -> Δ ▻▻ Γ ⊢ σ
+wk (var v) = var (wkᵛ v)
+wk (ƛ b)   = ƛ (wk b)
+wk (f · x) = wk f · wk x
+
 ren : Renames _⊢_
 ren ι (var v) = var (renᵛ ι v)
 ren ι (ƛ b)   = ƛ (ren (keep ι) b)
 ren ι (f · x) = ren ι f · ren ι x
-
-term : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Term σ
-term t = ren full t
 
 specializeᵛ : ∀ {n m σ} {Γ : Con n}
             -> (Ψ : Subst n m) -> σ ∈ Γ -> apply Ψ σ ∈ mapᶜ (apply Ψ) Γ
@@ -111,6 +126,11 @@ specialize Ψ (var v) = var (specializeᵛ Ψ v)
 specialize Ψ (ƛ b)   = ƛ (specialize Ψ b)
 specialize Ψ (f · x) = specialize Ψ f · specialize Ψ x
 
+widen : ∀ {n σ} {Γ : Con n} m -> Γ ⊢ σ -> _
+widen m = specialize (wkᵗ {m} ∘ Var)
+
+-- We don't need to preserve the order of implicit arguments,
+-- so non-CPS version would be simpler probably.
 generalize : ∀ {n σ} {Γ : Con n}
            -> Γ ⊢ σ -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
 generalize {σ = σ} = go (ftv σ) where

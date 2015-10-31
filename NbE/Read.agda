@@ -29,7 +29,7 @@ mutual
       postulate impossible : _
 
 read : ∀ {n} {σ : Type n} -> ⟦ σ ⟧ -> Term σ
-read x = term (embⁿᶠ (↓ x {ε}))
+read x = wk (embⁿᶠ (↓ x {ε}))
 
 inst : ∀ n {F : N-ary n Set Set} -> ∀ⁿ n F -> F $ᵗⁿ tabulate {n} (Ne ∘ Var)
 inst n f = f $ⁿ tabulate {n} (Ne ∘ Var)
