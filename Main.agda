@@ -19,9 +19,8 @@ termᵗ e = ¡ λ{ (m , Ψ , t) -> generalize (thicken (core t)) }
 
 term = fromJustᵗ ∘ termᵗ
 
--- (generalize ∘ wk) is a bad idea.
 termᵗ⁺ : (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> ∀ {Δ} -> _ }
-termᵗ⁺ e = ¡ λ{ (m , Ψ , t) -> λ {Δ} -> generalize (wk {Δ = Δ} (thicken (core t))) }
+termᵗ⁺ e = ¡ λ{ (m , Ψ , t) -> λ {Δ} -> wk-generalize {Δ = Δ} (thicken (core t)) }
 
 term⁺ = fromJustᵗ ∘ termᵗ⁺
 

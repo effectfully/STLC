@@ -20,7 +20,7 @@ applicator : Term⁽⁾ ((a ⇒ b) ⇒ a ⇒ b)
 applicator = term (2 # λ a b → a · b)
 
 applicator⁺ : Term⁺ 2 ((a ⇒ b) ⇒ a ⇒ b)
-applicator⁺ = λ {Γ} -> term⁺ (2 # λ a b → a · b) {Γ}
+applicator⁺ = term⁺ (2 # λ a b → a · b)
 
 A : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
 A = eval applicator

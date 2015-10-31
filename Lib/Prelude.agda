@@ -109,10 +109,28 @@ enumerate = go id suc zero where
   go k s i  []      = []
   go k s i (x ∷ xs) = (i , x) ∷ go (k ∘ suc) s (s i) xs
 
+-- We don't need to preserve the order of implicit arguments,
+-- so non-CPS version would be simpler probably.
 Associate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
           -> List A -> (A -> B) -> ((A -> B) -> Set β) -> Set β
 Associate  []      inj C = C inj
-Associate (x ∷ xs) inj C = ∀ {y} -> Associate xs inj λ c -> C λ x' -> if x == x' then y else c x'
+Associate (x ∷ xs) inj C = ∀ {y} -> Associate xs inj λ f -> C λ x' -> if x == x' then y else f x'
+
+associate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
+              {inj : A -> B} {C : (A -> B) -> Set β}
+          -> ∀ xs -> (∀ f -> C f) -> Associate xs inj C
+associate  []      c = c _
+associate (x ∷ xs) c = λ {y} -> associate xs λ f -> c λ x' -> if x == x' then y else f x'
+
+
+{-generalize : ∀ {n σ} {Γ : Con n}
+           -> Γ ⊢ σ
+           -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
+generalize {σ = σ} = go (ftv σ) where
+  go : ∀ {n Γ σ} {c : Subst n n -> Subst n n} is
+     -> Γ ⊢ σ -> Associate is Var λ Ψ -> let Φ = c Ψ in mapᶜ (apply Φ) Γ ⊢ apply Φ σ
+  go  []      t = specialize _ t
+  go (i ∷ is) t = go is t-}
 
 _$ⁿ_ : ∀ {α β n} {A : Set α} {F : N-ary n A (Set β)} -> ∀ⁿ n F -> (xs : Vec _ n) -> F $ᵗⁿ xs
 y $ⁿ  []      = y

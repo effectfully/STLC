@@ -31,6 +31,15 @@ data _⊢_ {n} Γ : Type n -> Set where
   ƛ_  : ∀ {σ τ} -> Γ ▻ σ ⊢ τ -> Γ ⊢ σ ⇒ τ
   _·_ : ∀ {σ τ} -> Γ ⊢ σ ⇒ τ -> Γ ⊢ σ     -> Γ ⊢ τ
 
+Term⁽⁾ : ∀ {n} -> Type n -> Set
+Term⁽⁾ σ = ε ⊢ σ
+
+Term : ∀ {n} -> Type n -> Set
+Term σ = ∀ {Γ} -> Γ ⊢ σ
+
+Term⁺ : ∀ {m} n -> Type (n + m) -> Set
+Term⁺ n σ = ∀ {Γ} -> Γ ⊢ σ
+
 Links : Set₁
 Links = ∀ {n} -> Con n -> Type n -> Set
 
@@ -88,15 +97,6 @@ renᵛ (skip ι)  v     = vs (renᵛ ι v)
 renᵛ (keep ι)  vz    = vz
 renᵛ (keep ι) (vs v) = vs (renᵛ ι v)
 
-Term⁽⁾ : ∀ {n} -> Type n -> Set
-Term⁽⁾ σ = ε ⊢ σ
-
-Term : ∀ {n} -> Type n -> Set
-Term σ = ∀ {Γ} -> Γ ⊢ σ
-
-Term⁺ : ∀ {m} n {Ψ} -> Type (n + m) -> Set
-Term⁺ n {Ψ} σ = ∀ {Γ : Con n} -> mapᶜ (apply Ψ) Γ ⊢ σ
-
 erase : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> Syntax (lenᶜ Γ)
 erase (var v) = var (∈-to-Fin v)
 erase (ƛ b)   = ƛ (erase b)
@@ -129,15 +129,15 @@ specialize Ψ (f · x) = specialize Ψ f · specialize Ψ x
 widen : ∀ {n σ} {Γ : Con n} m -> Γ ⊢ σ -> _
 widen m = specialize (wkᵗ {m} ∘ Var)
 
--- We don't need to preserve the order of implicit arguments,
--- so non-CPS version would be simpler probably.
 generalize : ∀ {n σ} {Γ : Con n}
-           -> Γ ⊢ σ -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
-generalize {σ = σ} = go (ftv σ) where
-  go : ∀ {n Γ σ} {c : Subst n n -> Subst n n} is
-     -> Γ ⊢ σ -> Associate is Var λ Ψ -> let Φ = c Ψ in mapᶜ (apply Φ) Γ ⊢ apply Φ σ
-  go  []      t = specialize _ t
-  go (i ∷ is) t = go is t
+           -> Γ ⊢ σ
+           -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
+generalize {σ = σ} t = associate (ftv σ) (flip specialize t)
+
+wk-generalize : ∀ {n σ} {Δ Γ : Con n}
+              -> Γ ⊢ σ
+              -> Associate (ftv σ) Var λ Ψ -> Δ ▻▻ mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
+wk-generalize {σ = σ} t = associate (ftv σ) (wk ∘ flip specialize t)
 
 thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
 thicken {σ = σ} = specialize λ i ->
