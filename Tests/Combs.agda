@@ -16,20 +16,20 @@ I' = normᵖ (I · I)
 Ωᵀ : Lift ⊤
 Ωᵀ = term (ω · ω)
 
-applicator : Term⁽⁾ ((a ⇒ b) ⇒ a ⇒ b)
-applicator = term (2 # λ a b → a · b)
+applicator : Term ((a ⇒ b) ⇒ a ⇒ b)
+applicator = term $ 2 # λ a b → a · b
+
+applicator⁽⁾ : Term⁽⁾ ((b ⇒ a) ⇒ b ⇒ a)
+applicator⁽⁾ = term $ 2 # λ a b → a · b
 
 applicator⁺ : Term⁺ 2 ((a ⇒ b) ⇒ a ⇒ b)
-applicator⁺ = term⁺ (2 # λ a b → a · b)
+applicator⁺ = term⁺ $ 2 # λ a b → a · b
 
-A : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
-A = eval applicator
+_$′_ : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
+_$′_ = eval applicator
 
-gapplicator : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
-gapplicator = wk (generalize applicator)
-
-gapplicator' : {a b : Type 2} -> Term ((a ⇒ b) ⇒ a ⇒ b)
-gapplicator' = read _$_
+gapplicator : {a b : Type 2} -> Term ((a ⇒ b) ⇒ a ⇒ b)
+gapplicator = read _$_
 
 mono-app : {A B : Set} -> (A -> B) -> A -> B
 mono-app f x = f x
@@ -37,32 +37,29 @@ mono-app f x = f x
 poly-app : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
 poly-app = eval (read (inst 2 λ A B -> mono-app {A} {B}))
 
-applicator'' : Term⁽⁾ ((b ⇒ a) ⇒ b ⇒ a)
-applicator'' = term (2 # λ a b → a · b)
+applicator-speсialized : Term⁺ 3 (((b ⇒ c) ⇒ a) ⇒ (b ⇒ c) ⇒ a)
+applicator-speсialized = term⁺ $ 2 # λ a b → a · b
 
-applicator-speсialized : Term⁽⁾ (((b ⇒ c) ⇒ a) ⇒ (b ⇒ c) ⇒ a)
-applicator-speсialized = spec-term 3 (2 # λ a b → a · b)
+applicator-generic : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
+applicator-generic = term $ 2 # λ a b → a · b
 
-applicator-generic : ∀ {a b} -> Term⁽⁾ ((a ⇒ b) ⇒ a ⇒ b)
-applicator-generic = term (2 # λ a b → a · b)
-
-applicator-generic-specialized : ∀ {a} -> Term⁽⁾ ((a ⇒ a) ⇒ a ⇒ a)
+applicator-generic-specialized : ∀ {a} -> Term ((a ⇒ a) ⇒ a ⇒ a)
 applicator-generic-specialized = applicator-generic
 
-cardinal : Term⁽⁾ ((a ⇒ b ⇒ c) ⇒ b ⇒ a ⇒ c)
-cardinal = term (3 # λ a b c → a · c · b)
+cardinal : Term ((a ⇒ b ⇒ c) ⇒ b ⇒ a ⇒ c)
+cardinal = term $ 3 # λ a b c → a · c · b
 
-owl : Term⁽⁾ (((a ⇒ b) ⇒ a) ⇒ (a ⇒ b) ⇒ b)
-owl = term (2 # λ a b → b · (a · b))
+owl : Term (((a ⇒ b) ⇒ a) ⇒ (a ⇒ b) ⇒ b)
+owl = term $ 2 # λ a b → b · (a · b)
 
-quacky : Term⁽⁾ (a ⇒ (a ⇒ b) ⇒ (b ⇒ c) ⇒ c)
-quacky = term (3 # λ a b c → c · (b · a))
+quacky : Term (a ⇒ (a ⇒ b) ⇒ (b ⇒ c) ⇒ c)
+quacky = term $ 3 # λ a b c → c · (b · a)
 
-psi : Term⁽⁾ ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
-psi = term (4 # λ a b c d → a · (b · c) · (b · d))
+psi : Term ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
+psi = term $ 4 # λ a b c d → a · (b · c) · (b · d)
 
-phoenix : Term⁽⁾ ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
-phoenix = term (4 # λ a b c d → a · (b · d) · (c · d))
+phoenix : Term ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
+phoenix = term $ 4 # λ a b c d → a · (b · d) · (c · d)
 
 liftM2 : ∀ {α β γ δ} {A : Set α} {B : Set β} {C : Set γ} {D : Set δ}
        -> ((B -> C -> D) -> (A -> B) -> (A -> C) -> A -> D)

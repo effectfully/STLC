@@ -14,22 +14,15 @@ open import STLC.Lib.MaybeElim
 open import STLC.M.Term using (core)
 open import STLC.M.Main using (infer)
 
-termᵗ : (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> _ }
-termᵗ e = ¡ λ{ (m , Ψ , t) -> generalize (thicken (core t)) }
+termᵗ : (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> ∀ {Δ} -> _ }
+termᵗ e = ¡ λ{ (m , Ψ , t) -> λ {Δ} -> generalize Δ (thicken (core t)) }
 
 term = fromJustᵗ ∘ termᵗ
 
-termᵗ⁺ : (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> ∀ {Δ} -> _ }
-termᵗ⁺ e = ¡ λ{ (m , Ψ , t) -> λ {Δ} -> wk-generalize {Δ = Δ} (thicken (core t)) }
+termᵗ⁺ : (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> ∀ {d Δ} -> _ }
+termᵗ⁺ e = ¡ λ{ (m , Ψ , t) -> λ {d Δ} -> generalize Δ (widen d (thicken (core t))) }
 
 term⁺ = fromJustᵗ ∘ termᵗ⁺
-
-spec-termᵗ : ∀ m' -> (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> _ }
-spec-termᵗ m' e = ¡ λ{ (m , Ψ , t) ->
-    let t' = thicken (core t) in generalize (widen (m' ∸ upper t') t')
-  }
-
-spec-term = λ m' -> fromJustᵗ ∘ spec-termᵗ m'
 
 normᵖᵗ : ∀ {n} (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> _ }
 normᵖᵗ {n} e = ¡ λ{ (m , Ψ , t) -> pure (erase (norm (thicken (core t)))) {n} }

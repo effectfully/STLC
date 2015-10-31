@@ -122,16 +122,6 @@ associate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
 associate  []      c = c _
 associate (x ∷ xs) c = λ {y} -> associate xs λ f -> c λ x' -> if x == x' then y else f x'
 
-
-{-generalize : ∀ {n σ} {Γ : Con n}
-           -> Γ ⊢ σ
-           -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
-generalize {σ = σ} = go (ftv σ) where
-  go : ∀ {n Γ σ} {c : Subst n n -> Subst n n} is
-     -> Γ ⊢ σ -> Associate is Var λ Ψ -> let Φ = c Ψ in mapᶜ (apply Φ) Γ ⊢ apply Φ σ
-  go  []      t = specialize _ t
-  go (i ∷ is) t = go is t-}
-
 _$ⁿ_ : ∀ {α β n} {A : Set α} {F : N-ary n A (Set β)} -> ∀ⁿ n F -> (xs : Vec _ n) -> F $ᵗⁿ xs
 y $ⁿ  []      = y
 f $ⁿ (x ∷ xs) = f x $ⁿ xs

@@ -37,8 +37,8 @@ Term⁽⁾ σ = ε ⊢ σ
 Term : ∀ {n} -> Type n -> Set
 Term σ = ∀ {Γ} -> Γ ⊢ σ
 
-Term⁺ : ∀ {m} n -> Type (n + m) -> Set
-Term⁺ n σ = ∀ {Γ} -> Γ ⊢ σ
+Term⁺ : ∀ n -> (∀ {m} -> Type (n + m)) -> Set
+Term⁺ n σ = ∀ {m Γ} -> Γ ⊢ σ {m}
 
 Links : Set₁
 Links = ∀ {n} -> Con n -> Type n -> Set
@@ -129,15 +129,13 @@ specialize Ψ (f · x) = specialize Ψ f · specialize Ψ x
 widen : ∀ {n σ} {Γ : Con n} m -> Γ ⊢ σ -> _
 widen m = specialize (wkᵗ {m} ∘ Var)
 
-generalize : ∀ {n σ} {Γ : Con n}
-           -> Γ ⊢ σ
-           -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
-generalize {σ = σ} t = associate (ftv σ) (flip specialize t)
+-- generalize : ∀ {n σ} {Γ : Con n}
+--            -> Γ ⊢ σ -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
+-- generalize {σ = σ} t = associate (ftv σ) (flip specialize t)
 
-wk-generalize : ∀ {n σ} {Δ Γ : Con n}
-              -> Γ ⊢ σ
-              -> Associate (ftv σ) Var λ Ψ -> Δ ▻▻ mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
-wk-generalize {σ = σ} t = associate (ftv σ) (wk ∘ flip specialize t)
+generalize : ∀ {n σ} {Γ : Con n} Δ
+           -> Γ ⊢ σ -> Associate (ftv σ) Var λ Ψ -> Δ ▻▻ mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
+generalize {σ = σ} _ t = associate (ftv σ) (wk ∘ flip specialize t)
 
 thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
 thicken {σ = σ} = specialize λ i ->
