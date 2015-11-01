@@ -12,18 +12,17 @@ I' = normᵖ (I · I)
 ω : Pure
 ω = pure (1 # λ x → x · x)
 
--- Should we remove this `Lift' or it doesn't matter?
 Ωᵀ : Lift ⊤
 Ωᵀ = term (ω · ω)
 
 applicator : Term ((a ⇒ b) ⇒ a ⇒ b)
-applicator = term $ 2 # λ a b → a · b
+applicator = term (2 # λ a b → a · b)
 
 applicator⁽⁾ : Term⁽⁾ ((b ⇒ a) ⇒ b ⇒ a)
-applicator⁽⁾ = term $ 2 # λ a b → a · b
+applicator⁽⁾ = term (2 # λ a b → a · b)
 
 applicator⁺ : Term⁺ 2 ((a ⇒ b) ⇒ a ⇒ b)
-applicator⁺ = term⁺ $ 2 # λ a b → a · b
+applicator⁺ = term⁺ (2 # λ a b → a · b)
 
 _$′_ : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
 _$′_ = eval applicator

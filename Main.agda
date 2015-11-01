@@ -1,5 +1,3 @@
--- Too ugly.
-
 module STLC.Main where
 
 open import STLC.Lib.Prelude  public
@@ -14,20 +12,11 @@ open import STLC.Lib.MaybeElim
 open import STLC.M.Term using (core)
 open import STLC.M.Main using (infer)
 
-termᵗ : (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> ∀ {Δ} -> _ }
-termᵗ e = ¡ λ{ (m , Ψ , t) -> λ {Δ} -> generalize Δ (thicken (core t)) }
+typifyᵗ = infer >=>ᵗ thicken ∘ core ∘ proj₂ ∘ proj₂
 
-term = fromJustᵗ ∘ termᵗ
-
-termᵗ⁺ : (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> ∀ {d Δ} -> _ }
-termᵗ⁺ e = ¡ λ{ (m , Ψ , t) -> λ {d Δ} -> generalize Δ (widen d (thicken (core t))) }
-
-term⁺ = fromJustᵗ ∘ termᵗ⁺
-
-normᵖᵗ : ∀ {n} (e : Syntax⁽⁾) -> infer e >>=ᵗ ! λ{ (m , Ψ , t) -> _ }
-normᵖᵗ {n} e = ¡ λ{ (m , Ψ , t) -> pure (erase (norm (thicken (core t)))) {n} }
-
-normᵖ = λ {n} -> fromJustᵗ ∘ normᵖᵗ {n}
+term  = fromJustᵗ ∘ (λ t {Δ} -> generalize Δ t)             <∘>ᵗ typifyᵗ
+term⁺ = fromJustᵗ ∘ (λ t {d Δ} -> generalize Δ (widen d t)) <∘>ᵗ typifyᵗ
+normᵖ = fromJustᵗ ∘ (pure ∘ erase ∘ norm)                   <∘>ᵗ typifyᵗ
 
 module Names where
   name : ∀ {m} n -> Type (suc n + m)
