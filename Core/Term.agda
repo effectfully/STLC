@@ -133,11 +133,13 @@ widen m = specialize (wkᵗ {m} ∘ Var)
 --            -> Γ ⊢ σ -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
 -- generalize {σ = σ} t = associate (ftv σ) (flip specialize t)
 
-generalize : ∀ {n σ} {Γ : Con n} Δ
-           -> Γ ⊢ σ -> Associate (ftv σ) Var λ Ψ -> Δ ▻▻ mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
+postulate undefined : ∀ {α} {A : Set α} -> A
+
+generalize : ∀ {m n σ} {Γ : Con n} Δ
+           -> Γ ⊢ σ -> Associate (ftv σ) undefined
+                         λ (Ψ : Subst n m) -> Δ ▻▻ mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
 generalize {σ = σ} _ t = associate (ftv σ) (wk ∘ flip specialize t)
 
 thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
-thicken {σ = σ} = specialize λ i ->
-  maybe Var undefined (lookup-for i (map swap (enumerate (ftv σ))))
-    where postulate undefined : _
+thicken {σ = σ} = specialize
+                    λ i -> maybe Var undefined (lookup-for i (map swap (enumerate (ftv σ))))

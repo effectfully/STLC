@@ -12,11 +12,13 @@ open import STLC.Lib.MaybeElim
 open import STLC.M.Term using (core)
 open import STLC.M.Main using (infer)
 
-typifyᵗ = infer >=>ᵗ thicken ∘ core ∘ proj₂ ∘ proj₂
+on-typed : ∀ {α} {A : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Set α}
+         -> (f : ∀ {n} {σ : Type n} -> (t : Term⁽⁾ σ) -> A t) -> ∀ e -> _
+on-typed f e = fromJustᵗ $ infer e >>=ᵗ f ∘ thicken ∘ core ∘ proj₂ ∘ proj₂
 
-term  = fromJustᵗ ∘ (λ t {Δ} -> generalize Δ t)             <∘>ᵗ typifyᵗ
-term⁺ = fromJustᵗ ∘ (λ t {d Δ} -> generalize Δ (widen d t)) <∘>ᵗ typifyᵗ
-normᵖ = fromJustᵗ ∘ (pure ∘ erase ∘ norm)                   <∘>ᵗ typifyᵗ
+term  = on-typed $ λ t {m Δ}   -> generalize {m} Δ t
+term⁻ = on-typed $ λ {n} t {Δ} -> generalize {n} Δ t
+normᵖ = on-typed $ pure ∘ erase ∘ norm
 
 module Names {m} where
   name : ∀ n -> Type (suc n + m)
