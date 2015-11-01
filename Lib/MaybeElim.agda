@@ -1,5 +1,3 @@
--- Not good.
-
 module STLC.Lib.MaybeElim where
 
 open import Level

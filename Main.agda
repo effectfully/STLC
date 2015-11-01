@@ -18,19 +18,19 @@ term  = fromJustᵗ ∘ (λ t {Δ} -> generalize Δ t)             <∘>ᵗ typi
 term⁺ = fromJustᵗ ∘ (λ t {d Δ} -> generalize Δ (widen d t)) <∘>ᵗ typifyᵗ
 normᵖ = fromJustᵗ ∘ (pure ∘ erase ∘ norm)                   <∘>ᵗ typifyᵗ
 
-module Names where
-  name : ∀ {m} n -> Type (suc n + m)
+module Names {m} where
+  name : ∀ n -> Type (suc n + m)
   name = wkᵗ ∘ Var ∘ fromℕ
 
-  a = λ {m} -> name {m} 0
-  b = λ {m} -> name {m} 1
-  c = λ {m} -> name {m} 2
-  d = λ {m} -> name {m} 3
-  e = λ {m} -> name {m} 4
-  f = λ {m} -> name {m} 5
-  g = λ {m} -> name {m} 6
-  h = λ {m} -> name {m} 7
-  i = λ {m} -> name {m} 8
-  j = λ {m} -> name {m} 9
-  k = λ {m} -> name {m} 10
+  a = name 0
+  b = name 1
+  c = name 2
+  d = name 3
+  e = name 4
+  f = name 5
+  g = name 6
+  h = name 7
+  i = name 8
+  j = name 9
+  k = name 10
 open Names public
