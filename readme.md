@@ -48,7 +48,7 @@ M : ∀ {n l} -> (Γ : Con n l) -> Syntax l -> (σ : Type n)
 
 `M` receives a context, a term and a type, and checks, whether there is a substitution that allows to typify the term in this context and with this type, after the substitution is applied to them. `M` uses rewrite rules under the hood — this simplifies the definition a lot.
 
-There is an [NbE](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Main.agda).
+There is an [NbE](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Main.agda), which uses the traversal from [5].
 
 There is [a part](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Read.agda) of the liftable terms approach to NbE (described in [4]), which is used to coerce Agda's lambda terms to their first-order counterparts.
 
@@ -97,12 +97,12 @@ gapp : ∀ {n σ τ} {Γ : Con n} -> Γ ⊢ (σ ⇒ τ) ⇒ σ ⇒ τ
 gapp = generalize _ app
 ```
 
-`normᵖ` normalizes a pure lambda term, if it's typeable. Uses NbE under the hood.
+`normᵖ` normalizes a pure lambda term whenever it's typeable. Uses NbE under the hood.
 
 ## References
 
 1. Martin Grabmüller. [Algorithm W Step by Step](https://github.com/wh5a/Algorithm-W-Step-By-Step)
 2. Oukseh Lee, Kwangkeun Yi. [A Generalized Let-Polymorphic Type Inference Algorithm](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.6832)
 3. Dr. Gergő Érdi. [Compositional Type Checking](http://gergo.erdi.hu/projects/tandoori/Tandoori-Compositional-Typeclass.pdf)
-4. Andreas Abel. [Normalization by Evaluation:
-Dependent Types and Impredicativity](http://www2.tcs.ifi.lmu.de/~abel/habil.pdf)
+4. Andreas Abel. [Normalization by Evaluation: Dependent Types and Impredicativity](http://www2.tcs.ifi.lmu.de/~abel/habil.pdf)
+5. Guillaume Allais. [Type and Scope Preserving Semantics](https://github.com/gallais/type-scope-semantics)
