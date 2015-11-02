@@ -6,6 +6,7 @@ open import STLC.Core.Type
 
 infixl 5 _▻_ _▻▻_
 infix  4 _∈_ _⊆_ _⊢_ _⊂[_]_
+infix  3 vs_
 infixr 3 ƛ_
 infixl 6 _·_
 
@@ -23,8 +24,8 @@ data _⊆_ {n} : Con n -> Con n -> Set where
   keep : ∀ {Γ Δ σ} -> Γ ⊆ Δ -> Γ ▻ σ ⊆ Δ ▻ σ
 
 data _∈_ {n} σ : Con n -> Set where
-  vz : ∀ {Γ}   -> σ ∈ Γ ▻ σ
-  vs : ∀ {Γ τ} -> σ ∈ Γ     -> σ ∈ Γ ▻ τ 
+  vz  : ∀ {Γ}   -> σ ∈ Γ ▻ σ
+  vs_ : ∀ {Γ τ} -> σ ∈ Γ     -> σ ∈ Γ ▻ τ 
 
 data _⊢_ {n} Γ : Type n -> Set where
   var : ∀ {σ}   -> σ ∈ Γ     -> Γ ⊢ σ
