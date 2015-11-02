@@ -46,7 +46,7 @@ M : ∀ {n l} -> (Γ : Con n l) -> Syntax l -> (σ : Type n)
   -> Maybe (∃ λ m -> ∃ λ (Ψ : Subst n m) -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ)
 ```
 
-`M` receives a context, a term and a type, and checks, whether there is a substitution that allows to typify the term in this context and with this type, after the substitution is applied to them. `M` uses rewrite rules under the hood -- this simplifies the definition a lot.
+`M` receives a context, a term and a type, and checks, whether there is a substitution that allows to typify the term in this context and with this type, after the substitution is applied to them. `M` uses rewrite rules under the hood — this simplifies the definition a lot.
 
 There is an [NbE](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Main.agda).
 
