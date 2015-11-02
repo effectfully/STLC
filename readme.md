@@ -46,11 +46,11 @@ M : ∀ {n l} -> (Γ : Con n l) -> Syntax l -> (σ : Type n)
   -> Maybe (∃ λ m -> ∃ λ (Ψ : Subst n m) -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ)
 ```
 
-`M` receives a context, a term and a type, and checks, whether there is a substitution, that allows to typify the term in this context and with this type, after the substitution is applied to them.
+`M` receives a context, a term and a type, and checks, whether there is a substitution that allows to typify the term in this context and with this type, after the substitution is applied to them. `M` uses rewrite rules under the hood -- this simplifies the definition a lot.
 
 There is an [NbE](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Main.agda).
 
-There is [a part](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Liftable.agda) of the liftable terms approach to NbE (described in [4]), which is used to coerce Agda's lambda terms to their first-order counterparts.
+There is [a part](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Read.agda) of the liftable terms approach to NbE (described in [4]), which is used to coerce Agda's lambda terms to their first-order counterparts.
 
 There is [a universe polymorphic eval](https://github.com/effectfully/STLC-in-Agda/blob/master/Core/Eval.agda).
 
@@ -81,13 +81,13 @@ term⁻ = on-typed $ λ {n} t {Δ} -> generalize {n} Δ t
 normᵖ = on-typed $ pure ∘ erase ∘ norm
 ```
 
-`on-typed` receives a function `f` and a term, tries to typify the term, makes type variables consecutive and strengthened, applies `f` to the result and removes `just`, when inferring is successfull, or returns `lift tt` otherwise.
+`on-typed` receives a function `f` and a term, tries to typify the term, makes type variables consecutive and strengthened, applies `f` to the result and removes `just`, when inferring is successful, or returns `lift tt` otherwise.
 
 `_>>=ᵗ_` constructs values of type `mx >>=ᵀ B`, which are "either `nothing` or `B x`". The idea is described [here](http://stackoverflow.com/questions/31105947/eliminating-a-maybe-at-the-type-level) (I changed the definition a bit though).
 
 `thicken` is defined in terms of `enumerate` described [here](http://stackoverflow.com/questions/33345899/how-to-enumerate-the-elements-of-a-list-by-fins-in-linear-time).
 
-`generalize` substitutes type variables with universally quantified types with universally quantified upper bounds for variables and also prepends a universally quantified context:
+`generalize` substitutes type variables with universally quantified types with universally quantified upper bounds for variables and prepends a universally quantified context:
 
 ```
 app : ε {2} ⊢ (Var zero ⇒ Var (suc zero)) ⇒ Var zero ⇒ Var (suc zero)
