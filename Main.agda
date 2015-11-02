@@ -16,6 +16,7 @@ on-typed : ∀ {α} {A : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Set α}
          -> (f : ∀ {n} {σ : Type n} -> (t : Term⁽⁾ σ) -> A t) -> ∀ e -> _
 on-typed f e = fromJustᵗ $ infer e >>=ᵗ f ∘ thicken ∘ core ∘ proj₂ ∘ proj₂
 
+typed = on-typed $ id
 term  = on-typed $ λ t {m Δ}   -> generalize {m} Δ t
 term⁻ = on-typed $ λ {n} t {Δ} -> generalize {n} Δ t
 normᵖ = on-typed $ pure ∘ erase ∘ norm
