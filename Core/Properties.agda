@@ -1,8 +1,11 @@
+{-# OPTIONS --rewriting #-}
+
 module STLC.Core.Properties where
 
 open import STLC.Lib.Prelude
 open import STLC.Core.Type
 open import STLC.Core.Term
+open Membership
 
 Var-inj : ∀ {n} {i j : Fin n} -> Var i ≡ Var j -> i ≡ j
 Var-inj refl = refl
@@ -32,6 +35,30 @@ instance
     ε     ≟ᶜ Δ ▻ τ = no λ()
     Γ ▻ σ ≟ᶜ ε     = no λ()
 
+sub-self : ∀ {n σ} -> (i : Fin n) -> [ i / σ ] i ≡ σ
+sub-self i rewrite ≟-refl i = refl
+
+non-sub : ∀ {n σ τ} {i : Fin n} -> i ∉ ftv-all σ -> apply [ i / τ ] σ ≡ σ
+non-sub {σ = Var j} {i = i} c with i ≟ j
+... | yes p rewrite p = ⊥-elim (c here)
+... | no  d = refl
+non-sub {σ = σ ⇒ τ} c = cong₂ _⇒_ (non-sub (c ∘ ∈-++₁)) (non-sub (c ∘ ∈-++₂ (ftv-all σ)))
+
+sub : ∀ {n} i -> (τ : Type n) -> Maybe (∃ λ (Ψ : Subst n n) -> apply Ψ (Var i) ≡ apply Ψ τ)
+sub i σ = drec (const nothing)
+               (λ c -> just ([ i / σ ] , right (sub-self i) (non-sub c)))
+               (i ∈? ftv-all σ)
+
+apply-∘ : ∀ {n m p} {Φ : Subst m p} {Ψ : Subst n m} σ
+        -> apply Φ (apply Ψ σ) ≡ apply (apply Φ ∘ Ψ) σ
+apply-∘ (Var i) = refl
+apply-∘ (σ ⇒ τ) = cong₂ _⇒_ (apply-∘ σ) (apply-∘ τ)
+
+foldrᶜ-mapᶜ : ∀ {α n m} {A : Set α} {g : Type m -> A -> A} {f : Type n -> Type m} {z} Γ
+            -> foldrᶜ g z (mapᶜ f Γ) ≡ foldrᶜ (g ∘ f) z Γ
+foldrᶜ-mapᶜ              ε      = refl
+foldrᶜ-mapᶜ {g = g} {f} (Γ ▻ σ) = cong (g (f σ)) (foldrᶜ-mapᶜ Γ)
+
 ⊂-inj : ∀ {n σ τ} {Γ Δ : Con n} -> Γ ⊂[ σ ] Δ ▻ τ -> Γ ⊂[ σ ] Δ ⊎ Γ ≡ Δ × σ ≡ τ
 ⊂-inj  vtop     = inj₂ (refl , refl)
 ⊂-inj (vskip p) = inj₁ p
@@ -45,9 +72,3 @@ _⊂?_ {σ = σ} Γ (Δ ▻ τ) with λ c₁ -> drec (yes ∘ vskip) (λ c₂ ->
 ... | yes p₁ rewrite p₁ with Γ ≟ Δ
 ... | no  c₁ = r (c₁ ∘ proj₁)
 ... | yes p₂ rewrite p₂ = yes vtop
-
-foldrᶜ-mapᶜ : ∀ {α n m} {A : Set α} {g : Type m -> A -> A} {f : Type n -> Type m} {z} Γ
-            -> foldrᶜ g z (mapᶜ f Γ) ≡ foldrᶜ (g ∘ f) z Γ
-foldrᶜ-mapᶜ              ε      = refl
-foldrᶜ-mapᶜ {g = g} {f} (Γ ▻ σ) = cong (g (f σ)) (foldrᶜ-mapᶜ Γ)
--- {-# REWRITE foldrᶜ-mapᶜ #-}

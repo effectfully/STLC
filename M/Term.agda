@@ -2,6 +2,7 @@ module STLC.M.Term where
 
 open import STLC.Lib.Prelude
 open import STLC.Core.Type
+open import STLC.Core.Properties
 import STLC.Core.Term as C
 
 infixl 5 _▻_
@@ -50,6 +51,9 @@ lookupᶜ-∈ (suc i) (Γ ▻ σ) = vs (lookupᶜ-∈ i Γ)
 coerceBy : ∀ {n l σ τ} {Γ : Con n l} -> σ ≡ τ -> Γ ⊢ σ -> Γ ⊢ τ
 coerceBy refl = id
 
+coerce : ∀ {n l σ τ} {Γ : Con n l} -> Γ ⊢ σ -> Maybe (Γ ⊢ τ)
+coerce {σ = σ} {τ} t = flip coerceBy t <$> decToMaybe (σ ≟ τ)
+
 specializeᵛ : ∀ {n m l σ} {Γ : Con n l}
             -> (Ψ : Subst n m) -> σ ∈ Γ -> apply Ψ σ ∈ mapᶜ (apply Ψ) Γ
 specializeᵛ Ψ  vz    = vz
@@ -65,4 +69,3 @@ mapᶜ-mapᶜ : ∀ {n m p l} {g : Type m -> Type p} {f : Type n -> Type m} (Γ 
           -> mapᶜ g (mapᶜ f Γ) ≡ mapᶜ (g ∘ f) Γ
 mapᶜ-mapᶜ  ε      = refl
 mapᶜ-mapᶜ (Γ ▻ σ) = cong (_▻ _) (mapᶜ-mapᶜ Γ)
-{-# REWRITE mapᶜ-mapᶜ #-}

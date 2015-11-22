@@ -10,19 +10,19 @@ I' : Pure
 I' = normᵖ (I · I)
 
 ω : Pure
-ω = pure (1 # λ x → x · x)
+ω = pure $ 1 # λ x → x · x
 
 Ωᵀ : Lift ⊤
 Ωᵀ = term (ω · ω)
 
 applicator : ∀ {n} {a b : Type n} -> Term ((a ⇒ b) ⇒ a ⇒ b)
-applicator = term (2 # λ a b → a · b)
+applicator = term $ 2 # λ a b → a · b
 
 applicator⁺ : Term⁺ 2 ((a ⇒ b) ⇒ a ⇒ b)
-applicator⁺ = term (2 # λ a b → a · b)
+applicator⁺ = term $ 2 # λ a b → a · b
 
 applicator⁻ : Term ((b ⇒ a) ⇒ b ⇒ a)
-applicator⁻ = term⁻ (2 # λ a b → a · b)
+applicator⁻ = term⁻ $ 2 # λ a b → a · b
 
 _$′_ : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
 _$′_ = eval applicator⁻
@@ -34,16 +34,17 @@ mono-app : {A B : Set} -> (A -> B) -> A -> B
 mono-app f x = f x
 
 poly-app : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
-poly-app = eval (read (inst 2 λ A B -> mono-app {A} {B}))
+poly-app = eval $ read $ inst 2 λ A B -> mono-app {A} {B}
 
 applicator-speсialized : Term⁺ 3 (((b ⇒ c) ⇒ a) ⇒ (b ⇒ c) ⇒ a)
 applicator-speсialized = term $ 2 # λ a b → a · b
 
-applicator-generic : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
-applicator-generic = term⁻ $ 2 # λ a b → a · b
+-- Why the hell this typechecks forever?
+-- applicator-generic : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
+-- applicator-generic = term⁻ $ 2 # λ a b → a · b
 
-applicator-generic-specialized : ∀ {a} -> Term ((a ⇒ a) ⇒ a ⇒ a)
-applicator-generic-specialized = applicator-generic
+-- applicator-generic-specialized : ∀ {a} -> Term ((a ⇒ a) ⇒ a ⇒ a)
+-- applicator-generic-specialized = applicator-generic
 
 cardinal : Term ((a ⇒ b ⇒ c) ⇒ b ⇒ a ⇒ c)
 cardinal = term⁻ $ 3 # λ a b c → a · c · b
@@ -64,5 +65,6 @@ liftM2 : ∀ {α β γ δ} {A : Set α} {B : Set β} {C : Set γ} {D : Set δ}
        -> ((B -> C -> D) -> (A -> B) -> (A -> C) -> A -> D)
 liftM2 = eval phoenix
 
+-- Consumes ~550 MB and typechecks in several minutes on my slow machine.
 -- eaglebald : Term ((e ⇒ f ⇒ g) ⇒ (a ⇒ b ⇒ e) ⇒ a ⇒ b ⇒ (c ⇒ d ⇒ f) ⇒ c ⇒ d ⇒ g)
 -- eaglebald = term⁻ $ 7 # λ a b c d e f g → a · (b · c · d) · (e · f · g)

@@ -1,6 +1,3 @@
--- Emm.. where is the whole rank2 business?
--- Or we just can't emulate it without embedding full System F?
-
 module STLC.Tests.Church where
 
 open import STLC.Main hiding (_·_)

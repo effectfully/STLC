@@ -1,0 +1,19 @@
+{-# OPTIONS --rewriting #-}
+
+module STLC.Core.Unify where
+
+open import STLC.Lib.Prelude
+open import STLC.Core.Type
+open import STLC.Core.Properties
+
+{-# REWRITE apply-∘ #-}
+
+{-# TERMINATING #-}
+unify : ∀ {n} -> (σ τ : Type n) -> Maybe (∃ λ (Ψ : Subst n n) -> apply Ψ σ ≡ apply Ψ τ)
+unify (Var i)   (Var j)   = drec (λ p -> just (Var , cong Var p)) (const (sub i (Var j))) (i ≟ j)
+unify (Var i)    τ        = sub i τ
+unify  σ        (Var j)   = pmap id sym <$> sub j σ
+unify (σ₁ ⇒ τ₁) (σ₂ ⇒ τ₂) =
+  unify  σ₁           σ₂          >>= uncurry λ Ψ p ->
+  unify (apply Ψ τ₁) (apply Ψ τ₂) >>= uncurry λ Φ q ->
+  just (apply Φ ∘ Ψ , cong₂ _⇒_ (cong (apply Φ) p) q)

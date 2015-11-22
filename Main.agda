@@ -10,11 +10,24 @@ open import STLC.NbE.Read    using (read; inst) public
 
 open import STLC.Lib.MaybeElim
 open import STLC.M.Term using (core)
-open import STLC.M.Main using (infer)
+
+module NF where
+  open import STLC.M.Typecheck using (runM; typecheck)
+
+  -- If `e' is in NF.
+  on-typed : ∀ {α} {A : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Set α}
+           -> (f : ∀ {n} {σ : Type n} -> (t : Term⁽⁾ σ) -> A t) -> ∀ e -> _
+  on-typed f e =
+    runM e                             >>=⊤ proj₂ >>> λ Ψ ->
+    let σ = apply Ψ (Var zero) in
+    typecheck e (apply (thickenˢ σ) σ) >>=⊤ λ t ->
+    f (core t)
+
+open import STLC.M.Main using (runM)
 
 on-typed : ∀ {α} {A : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Set α}
          -> (f : ∀ {n} {σ : Type n} -> (t : Term⁽⁾ σ) -> A t) -> ∀ e -> _
-on-typed f e = fromJustᵗ $ infer e >>=ᵗ f ∘ thicken ∘ core ∘ proj₂ ∘ proj₂
+on-typed f e = runM e >>=⊤ f ∘ thicken ∘ core ∘ proj₂ ∘ proj₂
 
 typed = on-typed $ id
 term  = on-typed $ λ t {m Δ}   -> generalize {m} Δ t

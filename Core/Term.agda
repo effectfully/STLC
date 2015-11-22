@@ -142,5 +142,4 @@ generalize : ∀ {m n σ} {Γ : Con n} Δ
 generalize {σ = σ} _ t = associate (ftv σ) (wk ∘ flip specialize t)
 
 thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
-thicken {σ = σ} = specialize
-                    λ i -> maybe Var undefined (lookup-for i (map swap (enumerate (ftv σ))))
+thicken {σ = σ} = specialize (thickenˢ σ)

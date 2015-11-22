@@ -1,13 +1,15 @@
 module STLC.Core.Type where
 
 open import STLC.Lib.Prelude
-open Membership
 
 infixr 6 _⇒_
 
 data Type n : Set where
   Var : Fin n -> Type n
   _⇒_ : Type n -> Type n -> Type n
+
+Type⁽⁾ : Set
+Type⁽⁾ = Type 0
 
 ftv-all : ∀ {n} -> Type n -> List (Fin n)
 ftv-all (Var i) = i ∷ []
@@ -33,33 +35,6 @@ renᵗ m = apply (Var ∘ raise m)
 [_/_] : ∀ {n} -> Fin n -> Type n -> Fin n -> Type n
 [ i / σ ] j = drec (const σ) (const (Var j)) (i ≟ j)
 
-sub-self : ∀ {n σ} -> (i : Fin n) -> [ i / σ ] i ≡ σ
-sub-self i rewrite ≟-refl i = refl
-
-non-sub : ∀ {n σ τ} {i : Fin n} -> i ∉ ftv-all σ -> apply [ i / τ ] σ ≡ σ
-non-sub {σ = Var j} {i = i} c with i ≟ j
-... | yes p rewrite p = ⊥-elim (c here)
-... | no  d = refl
-non-sub {σ = σ ⇒ τ} c = cong₂ _⇒_ (non-sub (c ∘ ∈-++₁)) (non-sub (c ∘ ∈-++₂ (ftv-all σ)))
-
-sub : ∀ {n} i -> (τ : Type n) -> Maybe (∃ λ (Ψ : Subst n n) -> apply Ψ (Var i) ≡ apply Ψ τ)
-sub i σ = drec (const nothing)
-               (λ c -> just ([ i / σ ] , right (sub-self i) (non-sub c)))
-               (i ∈? ftv-all σ)
-
-apply-∘ : ∀ {n m p} {Φ : Subst m p} {Ψ : Subst n m} σ
-        -> apply Φ (apply Ψ σ) ≡ apply (apply Φ ∘ Ψ) σ
-apply-∘ (Var i) = refl
-apply-∘ (σ ⇒ τ) = cong₂ _⇒_ (apply-∘ σ) (apply-∘ τ)
-{-# REWRITE apply-∘ #-}
-
-{-# TERMINATING #-}
-unify : ∀ {n} -> (σ τ : Type n) -> Maybe (∃ λ (Ψ : Subst n n) -> apply Ψ σ ≡ apply Ψ τ)
-unify (Var i)   (Var j)   = drec (λ p -> just (Var , cong Var p)) (const (sub i (Var j))) (i ≟ j)
-unify (Var i)    τ        = sub i τ
-unify  σ        (Var j)   = pmap id sym <$> sub j σ
-unify (σ₁ ⇒ τ₁) (σ₂ ⇒ τ₂) =
-  unify  σ₁           σ₂          >>= λ{ (Ψ , p) ->
-  unify (apply Ψ τ₁) (apply Ψ τ₂) >>= λ{ (Φ , q) ->
-  just (apply Φ ∘ Ψ , cong₂ _⇒_ (cong (apply Φ) p) q)
-  }}
+thickenˢ : ∀ {n} -> (σ : Type n) -> Subst n (length (ftv σ))
+thickenˢ σ = λ i -> maybe Var undefined (lookup-for i (map swap (enumerate (ftv σ))))
+  where postulate undefined : _

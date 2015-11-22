@@ -1,23 +1,25 @@
+{-# OPTIONS --rewriting #-}
+
 module STLC.Lib.Prelude where
 
-open import Level                      renaming (zero to lzero; suc to lsuc)    public
-open import Function                   hiding (_∋_)                             public
-open import Relation.Nullary                                                    public
-open import Relation.Nullary.Decidable hiding (map)                             public
-open import Relation.Binary            hiding (_⇒_)                             public
-open import Relation.Binary.PropositionalEquality hiding ([_])                  public
-open import Data.Empty                                                          public
-open import Data.Unit.Base             hiding (_≤_; module _≤_)                 public
-open import Data.Bool.Base                                                      public
-open import Data.Nat.Base              hiding (_⊔_; erase)                      public
-open import Data.Fin                   hiding (_+_; _<_; _≤_; fold; lift; pred) public
-open import Data.Sum                   renaming (map to smap)                   public
-open import Data.Maybe.Base            hiding (map)                             public
-open import Data.List.Base             hiding ([_]; zip; fromMaybe)             public
-open import Data.Vec                   using (Vec; []; _∷_; lookup; tabulate)   public
-open import Data.Vec.N-ary             renaming (_$ⁿ_ to _$ᵗⁿ_)                 public
+open import Level                      renaming (zero to lzero; suc to lsuc)         public
+open import Function                   hiding (_∋_)                                  public
+open import Relation.Nullary                                                         public
+open import Relation.Nullary.Decidable hiding (map)                                  public
+open import Relation.Binary            hiding (_⇒_)                                  public
+open import Relation.Binary.PropositionalEquality hiding ([_])                       public
+open import Data.Empty                                                               public
+open import Data.Unit.Base             hiding (_≤_; module _≤_)                      public
+open import Data.Bool.Base             hiding (_≟_)                                  public
+open import Data.Nat.Base              hiding (_⊔_; erase; Ordering; compare; _≟_)   public
+open import Data.Fin                   hiding (_+_; _<_; _≤_; fold; lift; pred)      public
+open import Data.Sum                   renaming (map to smap)                        public
+open import Data.Maybe.Base            hiding (map)                                  public
+open import Data.List.Base             hiding ([_]; zip; fromMaybe)                  public
+open import Data.Vec                   using (Vec; []; _∷_; lookup; tabulate)        public
+open import Data.Vec.N-ary             renaming (_$ⁿ_ to _$ᵗⁿ_)                      public
 
-open import STLC.Lib.NoEtaProduct      renaming (map to pmap)                   public
+open import STLC.Lib.NoEtaProduct      renaming (map to pmap)                        public
 
 {-# BUILTIN REWRITE _≡_ #-}
 
@@ -32,11 +34,25 @@ record Wrap {α} (A : Set α) : Set α where
   field unwrap : A
 open Wrap public
 
+infixl 2 _>>>_
+
+_>>>_ : ∀ {α β γ} {A : Set α} {B : A -> Set β} {C : ∀ {x} -> B x -> Set γ}
+      -> (f : (x : A) -> B x) -> (∀ {x} -> (y : B x) -> C y) -> ∀ x -> C (f x)
+f >>> g = g ∘ f
+
 right : ∀ {α} {A : Set α} {x y z : A} -> x ≡ z -> y ≡ z -> x ≡ y
 right p q rewrite q = p
 
 fromMaybe : ∀ {α} {A : Set α} -> A -> Maybe A -> A
 fromMaybe = maybe id
+
+first : ∀ {α β γ} {A : Set α} {B : Set β} {C : A -> Set γ}
+      -> (∀ x -> C x) -> (p : A × B) -> C (proj₁ p) × B
+first f (x , y) = f x , y
+
+second : ∀ {α β γ} {A : Set α} {B : A -> Set β} {C : A -> Set γ}
+       -> (∀ {x} -> B x -> C x) -> Σ A B -> Σ A C
+second g (x , y) = , g y
 
 delim : ∀ {α β} {A : Set α} {B : Dec A -> Set β}
       -> (∀ x -> B (yes x)) -> (∀ c -> B (no c)) -> (d : Dec A) -> B d

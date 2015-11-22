@@ -5,9 +5,9 @@ open import Function
 open import Relation.Binary.PropositionalEquality
 open import Data.Unit.Base
 open import Data.Bool.Base
-open import Data.Maybe.Base renaming (is-just to isJust)
+open import Data.Maybe.Base
 
-infixl 1  _>>=ᵀ_ _>>=ᵗ_
+infixl 1  _>>=ᵀ_ _>>=ᵗ_ _>>=⊤_
 infixl 4  _<$>ᵗ_
 infixr 1  _>=>ᵗ_
 infixr 10 _<∘>ᵗ_
@@ -32,6 +32,10 @@ _>>=ᵗ_ : ∀ {α β} {A : Set α} {B : A -> Set β}
        -> (mx : Maybe A) -> (∀ x -> B x) -> mx >>=ᵀ λ x _ -> B x
 nothing >>=ᵗ f = nothingᵗ
 just  x >>=ᵗ f = justᵗ (f x)
+
+_>>=⊤_ : ∀ {α β} {A : Set α} {B : A -> Set β}
+       -> (mx : Maybe A) -> (g : ∀ x -> B x) -> FromJustᵗ (mx >>=ᵗ g)
+mx >>=⊤ g = fromJustᵗ $ mx >>=ᵗ g
 
 runᵗ : ∀ {α β} {A : Set α} {mx : Maybe A} {B : ∀ x -> mx ≡ just x -> Set β} {x}
      -> mx >>=ᵀ B -> (p : mx ≡ just x) -> B x p
