@@ -12,12 +12,12 @@ infixl 4  _<$>ᵗ_
 infixr 1  _>=>ᵗ_
 infixr 10 _<∘>ᵗ_
 
-data _>>=ᵀ_ {α β} {A : Set α} : (mx : Maybe A) -> (∀ x -> mx ≡ just x -> Set β) -> Set (α ⊔ β) where
+data _>>=ᵀ_ {α β} {A : Set α} : (mx : Maybe A) -> (∀ x -> mx ≡ just x -> Set β) -> Set β where
   nothingᵗ : ∀ {B}   ->             nothing >>=ᵀ B
   justᵗ    : ∀ {x B} -> B x refl -> just x  >>=ᵀ B
 
 -- We could write (Set (maybe (const β) zero mx)),
--- but I don't want to introduce dependency at the level level.
+-- but I don't want to introduce dependency at the type level.
 FromJustᵗ : ∀ {α β} {A : Set α} {mx : Maybe A} {B : ∀ x -> mx ≡ just x -> Set β}
           -> mx >>=ᵀ B -> Set β
 FromJustᵗ  nothingᵗ         = Lift ⊤
