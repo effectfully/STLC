@@ -3,6 +3,7 @@ module STLC.Core.Type where
 open import STLC.Lib.Prelude
 
 infixr 6 _⇒_
+infixr 9 _∘ˢ_
 
 data Type n : Set where
   Var : Fin n -> Type n
@@ -25,6 +26,9 @@ Subst n m = Fin n -> Type m
 apply : ∀ {n m} -> Subst n m -> Type n -> Type m
 apply Ψ (Var i) = Ψ i
 apply Ψ (σ ⇒ τ) = apply Ψ σ ⇒ apply Ψ τ
+
+_∘ˢ_ : ∀ {n m p} -> Subst m p -> Subst n m -> Subst n p
+Φ ∘ˢ Ψ = apply Φ ∘ Ψ
 
 wkᵗ : ∀ {m n} -> Type n -> Type (n + m)
 wkᵗ = apply (Var ∘ inject+ _)

@@ -16,6 +16,7 @@ open import Data.Fin                   hiding (_+_; _<_; _≤_; fold; lift; pred
 open import Data.Sum                   renaming (map to smap)                        public
 open import Data.Maybe.Base            hiding (map)                                  public
 open import Data.List.Base             hiding ([_]; zip; fromMaybe)                  public
+open import Data.List.Properties                                                     public
 open import Data.Vec                   using (Vec; []; _∷_; lookup; tabulate)        public
 open import Data.Vec.N-ary             renaming (_$ⁿ_ to _$ᵗⁿ_)                      public
 
@@ -53,6 +54,14 @@ first f (x , y) = f x , y
 second : ∀ {α β γ} {A : Set α} {B : A -> Set β} {C : A -> Set γ}
        -> (∀ {x} -> B x -> C x) -> Σ A B -> Σ A C
 second g (x , y) = , g y
+
+inspectMaybe : ∀ {α β} {A : Set α} {B : Maybe A -> Set β}
+             -> (mx : Maybe A)
+             -> (∀ x -> mx ≡ just x -> B (just x))
+             -> (mx ≡ nothing -> B nothing)
+             -> B mx
+inspectMaybe  nothing g f = f refl
+inspectMaybe (just x) g f = g x refl
 
 delim : ∀ {α β} {A : Set α} {B : Dec A -> Set β}
       -> (∀ x -> B (yes x)) -> (∀ c -> B (no c)) -> (d : Dec A) -> B d
@@ -93,6 +102,11 @@ record DecEq {α} (A : Set α) : Set α where
   ≟-refl x with x ≟ x
   ... | yes refl = refl
   ... | no  c    = ⊥-elim (c refl)
+
+  ≢-no : ∀ {x y} -> x ≢ y -> ∃ λ c -> x ≟ y ≡ no c
+  ≢-no {x} {y} c with x ≟ y
+  ... | yes p = ⊥-elim (c p)
+  ... | no  d = d , refl
 open DecEq {{...}} public
 
 instance
@@ -104,9 +118,10 @@ lookup-for : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
 lookup-for x  []            = nothing
 lookup-for x ((y , z) ∷ xs) = if x == y then just z else lookup-for x xs
 
+-- It should be (List A ⊎ List A).
 deletem : ∀ {α} {A : Set α} {{_ : DecEq A}} -> A -> List A -> Maybe (List A)
 deletem x  []      = nothing
-deletem x (y ∷ xs) = if x == y then just xs else (y ∷_) <$> deletem x xs
+deletem x (y ∷ xs) = if y == x then just xs else (y ∷_) <$> deletem x xs
 
 delete : ∀ {α} {A : Set α} {{_ : DecEq A}} -> A -> List A -> List A
 delete x xs = fromMaybe xs (deletem x xs)
@@ -114,8 +129,7 @@ delete x xs = fromMaybe xs (deletem x xs)
 nub : ∀ {α} {A : Set α} {{_ : DecEq A}} -> List A -> List A
 nub = foldr (λ x r -> x ∷ delete x r) []
 
-enumerate : ∀ {α} {A : Set α} -> (xs : List A) -> List (Fin (length xs) × A)
-enumerate = go id suc zero where
+module Enumerate where
   go : ∀ {α} {A : Set α}
      -> (k : ℕ -> ℕ)
      -> (∀ {n} -> Fin (k n) -> Fin (k (suc n)))
@@ -124,6 +138,20 @@ enumerate = go id suc zero where
      -> List (Fin (k (length xs)) × A)
   go k s i  []      = []
   go k s i (x ∷ xs) = (i , x) ∷ go (k ∘ suc) s (s i) xs
+
+  enumerate : ∀ {α} {A : Set α} -> (xs : List A) -> List (Fin (length xs) × A)
+  enumerate = go id suc zero
+
+  goed : ∀ {α} {A : Set α} {k : ℕ -> ℕ}
+           {s : ∀ {n} -> Fin (k n) -> Fin (k (suc n))}
+           {i : ∀ {n} -> Fin (k (suc n))}
+       -> (xs : List A) -> map proj₂ (go k s i xs) ≡ xs
+  goed  []      = refl
+  goed (x ∷ xs) = cong (x ∷_) (goed xs)
+
+  enumerated : ∀ {α} {A : Set α} -> (xs : List A) -> map proj₂ (enumerate xs) ≡ xs
+  enumerated = goed
+open Enumerate using (enumerate; enumerated) public 
 
 -- We don't need to preserve the order of implicit arguments,
 -- so non-CPS version would be simpler probably.
@@ -151,7 +179,7 @@ module Membership where
 
   data _∈_ {α} {A : Set α} (x : A) : List A -> Set α where
     here  : ∀ {xs}   -> x ∈ x ∷ xs
-    there : ∀ {xs y} -> x ∈     xs -> x ∈ y ∷ xs
+    there : ∀ {y xs} -> x ∈     xs -> x ∈ y ∷ xs
 
   _∉_ : ∀ {α} {A : Set α} -> A -> List A -> Set α
   x ∉ xs = ¬ (x ∈ xs)
@@ -175,3 +203,32 @@ module Membership where
   y ∈? (x ∷ xs) with y ≟ x
   ... | yes p rewrite p = yes here
   ... | no  p = dmap there (p ∘∉_) (y ∈? xs)
+
+  ≢-∈-delete : ∀ {α} {A : Set α} {{_ : DecEq A}} {x y} {xs : List A}
+             -> x ≢ y -> x ∈ xs -> x ∈ delete y xs
+  ≢-∈-delete {y = y} {x ∷ xs} c  here     with x ≟ y
+  ... | yes p = ⊥-elim (c p)
+  ... | no  d with deletem y xs
+  ... | nothing = here
+  ... | just  _ = here
+  ≢-∈-delete {y = y} {z ∷ xs} c (there p) with z ≟ y
+  ... | yes _ = p
+  ... | no  _ with ≢-∈-delete c p
+  ... | r with deletem y xs
+  ... | nothing = there r
+  ... | just  _ = there r
+
+  ∈-nub : ∀ {α} {A : Set α} {{_ : DecEq A}} {x} {xs : List A} -> x ∈ xs -> x ∈ nub xs
+  ∈-nub          here         = here
+  ∈-nub {x = x} (there {y} p) with x ≟ y
+  ... | yes q rewrite q = here
+  ... | no  c = there (≢-∈-delete c (∈-nub p))
+
+  lookup-for≢nothing : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}} {x}
+                     -> (xs : List (A × B)) -> x ∈ map proj₁ xs -> lookup-for x xs ≢ nothing
+  lookup-for≢nothing          []             ()
+  lookup-for≢nothing         ((x , z) ∷ xs)  here     q rewrite ≟-refl x = case q of λ()
+  lookup-for≢nothing {x = x} ((y , z) ∷ xs) (there p) q with x ≟ y
+  ... | yes _ = case q of λ()
+  ... | no  c = lookup-for≢nothing xs p q
+

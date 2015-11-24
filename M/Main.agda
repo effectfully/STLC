@@ -22,13 +22,13 @@ M Γ (ƛ bˢ)    σ =
     >>=           uncurry λ Ψ p ->
   M (mapᶜ (apply (Ψ ∘ raise 2)) Γ ▻ apply Ψ (Var zero)) bˢ (apply Ψ (Var (suc zero)))
     >>= proj₂ >>> uncurry λ Φ b ->
-  just (, apply Φ ∘ Ψ ∘ raise 2 , coerceBy (cong (apply Φ) (sym p)) (ƛ b))
+  just (, Φ ∘ˢ Ψ ∘ raise 2 , coerceBy (cong (apply Φ) (sym p)) (ƛ b))
 M Γ (fˢ · xˢ) σ =
   M (mapᶜ (renᵗ 1) Γ)              fˢ (Var zero ⇒ renᵗ 1 σ)
     >>= proj₂ >>> uncurry λ Ψ f ->
   M (mapᶜ (apply (Ψ ∘ raise 1)) Γ) xˢ (apply Ψ (Var zero))
     >>= proj₂ >>> uncurry λ Φ x ->
-  just (, apply Φ ∘ Ψ ∘ raise 1 , specialize Φ f · x)
+  just (, Φ ∘ˢ Ψ ∘ raise 1 , specialize Φ f · x)
 
 runM : Syntax⁽⁾ -> _
 runM e = M ε e (Var {1} zero)

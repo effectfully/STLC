@@ -49,10 +49,10 @@ sub i σ = drec (const nothing)
                (λ c -> just ([ i / σ ] , right (sub-self i) (non-sub c)))
                (i ∈? ftv-all σ)
 
-apply-∘ : ∀ {n m p} {Φ : Subst m p} {Ψ : Subst n m} σ
-        -> apply Φ (apply Ψ σ) ≡ apply (apply Φ ∘ Ψ) σ
-apply-∘ (Var i) = refl
-apply-∘ (σ ⇒ τ) = cong₂ _⇒_ (apply-∘ σ) (apply-∘ τ)
+apply-apply : ∀ {n m p} {Φ : Subst m p} {Ψ : Subst n m} σ
+            -> apply Φ (apply Ψ σ) ≡ apply (Φ ∘ˢ Ψ) σ
+apply-apply (Var i) = refl
+apply-apply (σ ⇒ τ) = cong₂ _⇒_ (apply-apply σ) (apply-apply τ)
 
 foldrᶜ-mapᶜ : ∀ {α n m} {A : Set α} {g : Type m -> A -> A} {f : Type n -> Type m} {z} Γ
             -> foldrᶜ g z (mapᶜ f Γ) ≡ foldrᶜ (g ∘ f) z Γ

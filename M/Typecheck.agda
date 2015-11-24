@@ -16,13 +16,13 @@ M Γ (ƛ bˢ)    σ =
     >>= uncurry λ Ψ p ->
   M (mapᶜ (apply (Ψ ∘ raise 2)) Γ ▻ apply Ψ (Var zero)) bˢ (apply Ψ (Var (suc zero)))
     >>= proj₂ >>> λ Φ ->
-  just (, apply Φ ∘ Ψ ∘ raise 2)
+  just (, Φ ∘ˢ Ψ ∘ raise 2)
 M Γ (fˢ · xˢ) σ =
   M (mapᶜ (renᵗ 1) Γ)              fˢ (Var zero ⇒ renᵗ 1 σ)
     >>= proj₂ >>> λ Ψ ->
   M (mapᶜ (apply (Ψ ∘ raise 1)) Γ) xˢ (apply Ψ (Var zero))
     >>= proj₂ >>> λ Φ ->
-  just (, apply Φ ∘ Ψ ∘ raise 1)
+  just (, Φ ∘ˢ Ψ ∘ raise 1)
 
 runM : Syntax⁽⁾ -> _
 runM e = M ε e (Var {1} zero)

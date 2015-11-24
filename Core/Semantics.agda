@@ -23,7 +23,7 @@ record Kripkable : Set₁ where
   k ·ᵏ t = k stop t
 
   renᵏ : ∀ {n σ τ} {Γ Δ : Con n} -> Γ ⊆ Δ -> Kripke Γ σ τ -> Kripke Δ σ τ
-  renᵏ ι k κ = k (κ ∘ˢ ι)
+  renᵏ ι k κ = k (κ ∘ᵉ ι)
 
   _∘ᵏ_ : ∀ {n σ τ ν} {Γ : Con n} -> Kripke Γ τ ν -> Kripke Γ σ τ -> Kripke Γ σ ν
   (k₂ ∘ᵏ k₁) ι = k₂ ι ∘ k₁ ι

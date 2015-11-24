@@ -73,12 +73,12 @@ full : ∀ {n} {Γ : Con n} -> ε ⊆ Γ
 full {Γ = ε}     = stop
 full {Γ = Γ ▻ σ} = skip full
 
-_∘ˢ_ : ∀ {n} {Γ Δ Ξ : Con n} -> Δ ⊆ Ξ -> Γ ⊆ Δ -> Γ ⊆ Ξ
-stop   ∘ˢ ι      = ι
-skip κ ∘ˢ ι      = skip (κ ∘ˢ ι)
-keep κ ∘ˢ stop   = keep κ
-keep κ ∘ˢ skip ι = skip (κ ∘ˢ ι)
-keep κ ∘ˢ keep ι = keep (κ ∘ˢ ι)
+_∘ᵉ_ : ∀ {n} {Γ Δ Ξ : Con n} -> Δ ⊆ Ξ -> Γ ⊆ Δ -> Γ ⊆ Ξ
+stop   ∘ᵉ ι      = ι
+skip κ ∘ᵉ ι      = skip (κ ∘ᵉ ι)
+keep κ ∘ᵉ stop   = keep κ
+keep κ ∘ᵉ skip ι = skip (κ ∘ᵉ ι)
+keep κ ∘ᵉ keep ι = keep (κ ∘ᵉ ι)
 
 ⊂[]-to-∈ : ∀ {n σ} {Γ Δ : Con n} -> Γ ⊂[ σ ] Δ -> σ ∈ Δ
 ⊂[]-to-∈  vtop     = vz
@@ -130,6 +130,9 @@ specialize Ψ (f · x) = specialize Ψ f · specialize Ψ x
 widen : ∀ {n σ} {Γ : Con n} m -> Γ ⊢ σ -> _
 widen m = specialize (wkᵗ {m} ∘ Var)
 
+thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
+thicken {σ = σ} = specialize (thickenˢ σ)
+
 -- generalize : ∀ {n σ} {Γ : Con n}
 --            -> Γ ⊢ σ -> Associate (ftv σ) Var λ Ψ -> mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
 -- generalize {σ = σ} t = associate (ftv σ) (flip specialize t)
@@ -140,6 +143,3 @@ generalize : ∀ {m n σ} {Γ : Con n} Δ
            -> Γ ⊢ σ -> Associate (ftv σ) undefined
                          λ (Ψ : Subst n m) -> Δ ▻▻ mapᶜ (apply Ψ) Γ ⊢ apply Ψ σ
 generalize {σ = σ} _ t = associate (ftv σ) (wk ∘ flip specialize t)
-
-thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
-thicken {σ = σ} = specialize (thickenˢ σ)
