@@ -3,17 +3,17 @@ module STLC.Tests.Combs where
 open import STLC.Main
 
 I : Pure
-I = pure (1 # λ x → x)
+I = pure $ 1 # λ x → x
 
 -- λ {.n} → ƛ var zero
 I' : Pure
-I' = normᵖ (I · I)
+I' = normᵖ $ I · I
 
 ω : Pure
 ω = pure $ 1 # λ x → x · x
 
 Ωᵀ : Lift ⊤
-Ωᵀ = term (ω · ω)
+Ωᵀ = term $ ω · ω
 
 applicator : ∀ {n} {a b : Type n} -> Term ((a ⇒ b) ⇒ a ⇒ b)
 applicator = term $ 2 # λ a b → a · b
@@ -55,16 +55,18 @@ owl = term⁻ $ 2 # λ a b → b · (a · b)
 quacky : Term (a ⇒ (a ⇒ b) ⇒ (b ⇒ c) ⇒ c)
 quacky = term⁻ $ 3 # λ a b c → c · (b · a)
 
-psi : Term ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
-psi = term⁻ $ 4 # λ a b c d → a · (b · c) · (b · d)
+-- Consumes ~510 MB.
+-- psi : Term ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
+-- psi = term⁻ $ 4 # λ a b c d → a · (b · c) · (b · d)
 
-phoenix : Term ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
-phoenix = term⁻ $ 4 # λ a b c d → a · (b · d) · (c · d)
+-- Consumes ~680
+-- phoenix : Term ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
+-- phoenix = term⁻ $ 4 # λ a b c d → a · (b · d) · (c · d)
 
-liftM2 : ∀ {α β γ δ} {A : Set α} {B : Set β} {C : Set γ} {D : Set δ}
-       -> ((B -> C -> D) -> (A -> B) -> (A -> C) -> A -> D)
-liftM2 = eval phoenix
+-- liftM2 : ∀ {α β γ δ} {A : Set α} {B : Set β} {C : Set γ} {D : Set δ}
+--        -> ((B -> C -> D) -> (A -> B) -> (A -> C) -> A -> D)
+-- liftM2 = eval phoenix
 
--- Consumes ~550 MB and typechecks in several minutes on my slow machine.
+-- With the old version consumed ~550 MB and typechecked in several minutes on my slow machine.
 -- eaglebald : Term ((e ⇒ f ⇒ g) ⇒ (a ⇒ b ⇒ e) ⇒ a ⇒ b ⇒ (c ⇒ d ⇒ f) ⇒ c ⇒ d ⇒ g)
 -- eaglebald = term⁻ $ 7 # λ a b c d e f g → a · (b · c · d) · (e · f · g)

@@ -1,7 +1,6 @@
 module STLC.NbE.NF where
 
-open import STLC.Core.Type
-open import STLC.Core.Term
+open import STLC.Term
 
 infix  4 _⊢ⁿᵉ_ _⊢ⁿᶠ_
 infixl 6 _·ⁿᵉ_

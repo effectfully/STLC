@@ -1,4 +1,4 @@
-module STLC.Core.Syntax where
+module STLC.Term.Syntax where
 
 open import STLC.Lib.Prelude
 

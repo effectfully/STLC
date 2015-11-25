@@ -1,9 +1,7 @@
 module STLC.NbE.Read where
 
 open import STLC.Lib.Prelude
-open import STLC.Core.Type
-open import STLC.Core.Term
-open import STLC.Core.Properties
+open import STLC.Term
 open import STLC.NbE.NF
 
 Ne : ∀ {n} -> Type n -> Set

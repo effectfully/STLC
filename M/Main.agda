@@ -3,9 +3,9 @@
 module STLC.M.Main where
 
 open import STLC.Lib.Prelude
-open import STLC.Core.Syntax
-open import STLC.Core.Type
-open import STLC.Core.Unify
+open import STLC.Term.Syntax
+open import STLC.Type
+open import STLC.Type.Unify
 open import STLC.M.Term
 
 {-# REWRITE mapᶜ-mapᶜ #-}

@@ -1,9 +1,8 @@
-module STLC.Core.Eval where
+module STLC.Semantics.Eval where
 
-open import STLC.Lib.Sets
 open import STLC.Lib.Prelude
-open import STLC.Core.Type
-open import STLC.Core.Term
+open import STLC.Lib.Sets
+open import STLC.Term
 
 ⟦_⟧ᵗˡ : ∀ {n} σ -> Level ^ n -> Level
 ⟦ Var i ⟧ᵗˡ αs = on-^ (lookup i) αs

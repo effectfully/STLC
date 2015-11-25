@@ -1,8 +1,7 @@
-module STLC.Core.Semantics where
+module STLC.Semantics.Core where
 
 open import STLC.Lib.Prelude
-open import STLC.Core.Type
-open import STLC.Core.Term
+open import STLC.Term
 
 -- Forgive me this.
 record Kripkable : Set₁ where

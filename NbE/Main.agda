@@ -1,9 +1,8 @@
 module STLC.NbE.Main where
 
 open import STLC.Lib.Prelude
-open import STLC.Core.Type
-open import STLC.Core.Term
-open import STLC.Core.Semantics
+open import STLC.Term
+open import STLC.Semantics.Core
 open import STLC.NbE.NF
 
 infix  4 _⊨_ _⊨*_

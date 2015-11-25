@@ -1,10 +1,10 @@
 {-# OPTIONS --rewriting #-}
 
-module STLC.Core.Unify where
+module STLC.Type.Unify where
 
 open import STLC.Lib.Prelude
-open import STLC.Core.Type
-open import STLC.Core.Properties
+open import STLC.Type.Core
+open import STLC.Type.Properties
 
 {-# REWRITE apply-apply #-}
 

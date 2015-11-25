@@ -35,7 +35,10 @@ record Wrap {α} (A : Set α) : Set α where
   field unwrap : A
 open Wrap public
 
-infixl 2 _>>>_
+infixl 10 _%
+infixl 2  _>>>_
+
+_% = _∘_
 
 _>>>_ : ∀ {α β γ} {A : Set α} {B : A -> Set β} {C : ∀ {x} -> B x -> Set γ}
       -> (f : (x : A) -> B x) -> (∀ {x} -> (y : B x) -> C y) -> ∀ x -> C (f x)
@@ -74,6 +77,22 @@ drec = delim
 dmap : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> (¬ A -> ¬ B) -> Dec A -> Dec B
 dmap f g = drec (yes ∘ f) (no ∘ g)
 
+ddsum : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ}
+      -> (A -> Dec C) -> (B -> Dec C) -> (¬ A -> ¬ B -> Dec C) -> Dec A -> Dec B -> Dec C
+ddsum f g h d₁ d₂ = drec f (λ c -> drec g (h c) d₂) d₁
+
+ddprod : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ}
+       -> (A -> B -> Dec C) -> (¬ A -> Dec C) -> (¬ B -> Dec C) -> Dec A -> Dec B -> Dec C
+ddprod h f g d₁ d₂ = drec (λ x -> drec (h x) g d₂) f d₁
+
+dsum : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ}
+     -> (A -> C) -> (B -> C) -> (¬ A -> ¬ B -> ¬ C) -> Dec A -> Dec B -> Dec C
+dsum f g h = ddsum (yes ∘ f) (yes ∘ g) (no % ∘ h)  
+
+dprod : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ}
+      -> (A -> B -> C) -> (¬ A -> ¬ C) -> (¬ B -> ¬ C) -> Dec A -> Dec B -> Dec C
+dprod h f g = ddprod (yes % ∘ h) (no ∘ f) (no ∘ g)     
+
 dcong : ∀ {α β} {A : Set α} {B : Set β} {x y}
       -> (f : A -> B)
       -> (∀ {x y} -> f x ≡ f y -> x ≡ y)
@@ -87,9 +106,16 @@ dcong₂ : ∀ {α β γ} {A : Set α} {B : Set β} {C : Set γ} {x y v w}
        -> Dec (x ≡ y)
        -> Dec (v ≡ w)
        -> Dec (f x v ≡ f y w)
-dcong₂ f inj d₁ d₂ = drec (λ p₁ -> dmap (λ p₂ -> cong₂ f p₁ p₂) (λ c -> c ∘ proj₂ ∘ inj) d₂)
-                          (λ c  -> no (c ∘ proj₁ ∘ inj))
-                           d₁
+dcong₂ f inj = dprod (cong₂ f) (λ c -> c ∘ proj₁ ∘ inj) (λ c -> c ∘ proj₂ ∘ inj)
+
+dJ : ∀ {α β} {A : Set α} {x y}
+   -> (B : A -> A -> Set β)
+   -> Dec (B x x)
+   -> (x ≢ y -> Dec (B x y))
+   -> Dec (x ≡ y)
+   -> Dec (B x y)
+dJ B y f (yes refl) = y
+dJ B y f (no  c)    = f c
 
 record DecEq {α} (A : Set α) : Set α where
   infix 5 _≟_ _==_
@@ -116,7 +142,7 @@ instance
 lookup-for : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
            -> A -> List (A × B) -> Maybe B
 lookup-for x  []            = nothing
-lookup-for x ((y , z) ∷ xs) = if x == y then just z else lookup-for x xs
+lookup-for x ((y , z) ∷ xs) = if y == x then just z else lookup-for x xs
 
 -- It should be (List A ⊎ List A).
 deletem : ∀ {α} {A : Set α} {{_ : DecEq A}} -> A -> List A -> Maybe (List A)
@@ -153,19 +179,6 @@ module Enumerate where
   enumerated = goed
 open Enumerate using (enumerate; enumerated) public 
 
--- We don't need to preserve the order of implicit arguments,
--- so non-CPS version would be simpler probably.
-Associate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
-          -> List A -> (A -> B) -> ((A -> B) -> Set β) -> Set β
-Associate  []      inj C = C inj
-Associate (x ∷ xs) inj C = ∀ {y} -> Associate xs inj λ f -> C λ x' -> if x == x' then y else f x'
-
-associate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
-              {inj : A -> B} {C : (A -> B) -> Set β}
-          -> ∀ xs -> (∀ f -> C f) -> Associate xs inj C
-associate  []      c = c _
-associate (x ∷ xs) c = λ {y} -> associate xs λ f -> c λ x' -> if x == x' then y else f x'
-
 _$ⁿ_ : ∀ {α β n} {A : Set α} {F : N-ary n A (Set β)} -> ∀ⁿ n F -> (xs : Vec _ n) -> F $ᵗⁿ xs
 y $ⁿ  []      = y
 f $ⁿ (x ∷ xs) = f x $ⁿ xs
@@ -180,6 +193,21 @@ module Membership where
   data _∈_ {α} {A : Set α} (x : A) : List A -> Set α where
     here  : ∀ {xs}   -> x ∈ x ∷ xs
     there : ∀ {y xs} -> x ∈     xs -> x ∈ y ∷ xs
+
+  split-∈ : ∀ {α β} {A : Set α} {B : A -> Set β} {xs : List A} {x y}
+          -> (∀ x -> x ∈ xs -> B x) -> B y -> x ∈ y ∷ xs -> B x
+  split-∈ f z  here     = z
+  split-∈ f z (there p) = f _ p
+
+  Associate : ∀ {α β} {A : Set α} {B : A -> Set β}
+            -> (xs : List A) -> ((∀ x -> x ∈ xs -> B x) -> Set β) -> Set β
+  Associate  []      C = C (λ _ ())
+  Associate (x ∷ xs) C = ∀ {y} -> Associate xs λ f -> C λ _ -> split-∈ f y
+
+  associate : ∀ {α β} {A : Set α} {B : A -> Set β}
+            -> ∀ xs -> {C : (∀ x -> x ∈ xs -> B x) -> Set β} -> (∀ f -> C f) -> Associate xs C
+  associate  []      c = c (λ _ ())
+  associate (x ∷ xs) c = λ {y} -> associate xs λ f -> c λ _ -> split-∈ f y
 
   _∉_ : ∀ {α} {A : Set α} -> A -> List A -> Set α
   x ∉ xs = ¬ (x ∈ xs)
@@ -200,9 +228,10 @@ module Membership where
 
   _∈?_ : ∀ {α} {A : Set α} {{_ : DecEq A}} -> Decidable (_∈_ {A = A})
   y ∈?  []      = no λ()
-  y ∈? (x ∷ xs) with y ≟ x
-  ... | yes p rewrite p = yes here
-  ... | no  p = dmap there (p ∘∉_) (y ∈? xs)
+  y ∈? (x ∷ xs) = dJ (λ y x -> y ∈ x ∷ xs)
+                     (yes here)
+                     (λ c -> dmap there (c ∘∉_) (y ∈? xs))
+                     (y ≟ x)
 
   ≢-∈-delete : ∀ {α} {A : Set α} {{_ : DecEq A}} {x y} {xs : List A}
              -> x ≢ y -> x ∈ xs -> x ∈ delete y xs
@@ -228,7 +257,7 @@ module Membership where
                      -> (xs : List (A × B)) -> x ∈ map proj₁ xs -> lookup-for x xs ≢ nothing
   lookup-for≢nothing          []             ()
   lookup-for≢nothing         ((x , z) ∷ xs)  here     q rewrite ≟-refl x = case q of λ()
-  lookup-for≢nothing {x = x} ((y , z) ∷ xs) (there p) q with x ≟ y
+  lookup-for≢nothing {x = x} ((y , z) ∷ xs) (there p) q with y ≟ x
   ... | yes _ = case q of λ()
   ... | no  c = lookup-for≢nothing xs p q
-
+open Membership using (Associate; associate) public

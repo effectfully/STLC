@@ -1,9 +1,8 @@
 module STLC.M.Term where
 
 open import STLC.Lib.Prelude
-open import STLC.Core.Type
-open import STLC.Core.Properties
-import STLC.Core.Term as C
+open import STLC.Type
+import STLC.Term as C
 
 infixl 5 _▻_
 infix  4 _∈_ _⊢_
