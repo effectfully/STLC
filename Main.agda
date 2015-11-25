@@ -17,9 +17,10 @@ module NF where
   on-typed : ∀ {α} {A : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Set α}
            -> (f : ∀ {n} {σ : Type n} -> (t : Term⁽⁾ σ) -> A t) -> ∀ e -> _
   on-typed f e =
-    runM e                                >>=⊤ proj₂ >>> λ Ψ ->
+    runM e                             >>=⊤ proj₂ >>> λ Ψ ->
     let σ = apply Ψ (Var zero) in
-    typecheck e (runSubstIn (thickenˢ σ)) >>=⊤ λ t ->
+    -- typecheck e (runSubstIn (thickenˢ σ)) >>=⊤ λ t ->
+    typecheck e (apply (thickenˢ σ) σ) >>=⊤ λ t ->
     f (core t)
 
 open import STLC.M.Main using (runM)

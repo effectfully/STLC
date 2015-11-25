@@ -78,15 +78,21 @@ specialize Ψ (f · x) = specialize Ψ f · specialize Ψ x
 widen : ∀ {n σ} {Γ : Con n} m -> Γ ⊢ σ -> _
 widen m = specialize (wkᵗ {m} ∘ Var)
 
--- These two are far slower than they were.
 thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
-thicken {σ = σ} = specialize (unsafeToSubst (thickenˢ σ))
+thicken {σ = σ} = specialize (thickenˢ σ)
 
 generalize : ∀ {m n} {σ : Type n}
-           -> (Γ : Con m) -> Term⁽⁾ σ ->
-                 Associate (ftv σ) λ (Ψ : SubstInFtv σ m) ->
-                    Γ ⊢ apply (unsafeToSubst (fromInFtv σ Ψ)) σ
-generalize {σ = σ} _ t = associate (ftv σ) λ Ψ -> wk (specialize (unsafeToSubst (fromInFtv σ Ψ)) t)
+           -> (Γ : Con m) -> Term⁽⁾ σ -> UnsafeAssociate (ftv σ) λ (Ψ : Subst n m) -> Γ ⊢ apply Ψ σ
+generalize {σ = σ} _ t = unsafeAssociate (ftv σ) (wk ∘ flip specialize t)
+
+-- thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
+-- thicken {σ = σ} = specialize (unsafeToSubst (thickenˢ σ))
+
+-- generalize : ∀ {m n} {σ : Type n}
+--            -> (Γ : Con m) -> Term⁽⁾ σ ->
+--                  Associate (ftv σ) λ (Ψ : SubstInFtv σ m) ->
+--                     Γ ⊢ apply (unsafeToSubst (fromInFtv σ Ψ)) σ
+-- generalize {σ = σ} _ t = associate (ftv σ) λ Ψ -> wk (specialize (unsafeToSubst (fromInFtv σ Ψ)) t)
 
 -- data SubstsIn {n} : Con n -> ℕ -> Set where
 --   øˢ   : ∀ {m} -> SubstsIn ε m

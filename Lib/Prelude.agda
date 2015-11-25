@@ -187,6 +187,22 @@ _$ⁿʰ_ : ∀ {α β n} {A : Set α} {F : N-ary n A (Set β)} -> ∀ⁿʰ n F -
 y $ⁿʰ  []      = y
 y $ⁿʰ (x ∷ xs) = y $ⁿʰ xs
 
+module _ where
+  private postulate undefined : ∀ {α} {A : Set α} -> A
+
+  UnsafeAssociate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
+                  -> List A -> ((A -> B) -> Set β) -> Set β
+  UnsafeAssociate  []      C = C undefined
+  UnsafeAssociate (x ∷ xs) C = ∀ {y} ->
+    UnsafeAssociate xs λ f -> C λ x' -> if x == x' then y else f x'
+
+  unsafeAssociate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
+                      {C : (A -> B) -> Set β}
+                  -> ∀ xs -> (∀ f -> C f) -> UnsafeAssociate xs C
+  unsafeAssociate  []      c = c undefined
+  unsafeAssociate (x ∷ xs) c = λ {y} ->
+    unsafeAssociate xs λ f -> c λ x' -> if x == x' then y else f x'
+
 module Membership where
   infix 4 _∈_ _∉_
 

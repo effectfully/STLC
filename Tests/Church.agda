@@ -1,7 +1,7 @@
 module STLC.Tests.Church where
 
 open import STLC.Main hiding (_·_)
-open import STLC.Core.Term using (_·_)
+open import STLC.Term using (_·_)
 
 ℕᵗ : ∀ {n} -> Type n -> Type n
 ℕᵗ σ = (σ ⇒ σ) ⇒ σ ⇒ σ

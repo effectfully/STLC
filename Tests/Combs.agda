@@ -55,17 +55,15 @@ owl = term⁻ $ 2 # λ a b → b · (a · b)
 quacky : Term (a ⇒ (a ⇒ b) ⇒ (b ⇒ c) ⇒ c)
 quacky = term⁻ $ 3 # λ a b c → c · (b · a)
 
--- Consumes ~510 MB.
--- psi : Term ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
--- psi = term⁻ $ 4 # λ a b c d → a · (b · c) · (b · d)
+psi : Term ((b ⇒ b ⇒ c) ⇒ (a ⇒ b) ⇒ a ⇒ a ⇒ c)
+psi = term⁻ $ 4 # λ a b c d → a · (b · c) · (b · d)
 
--- Consumes ~680
--- phoenix : Term ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
--- phoenix = term⁻ $ 4 # λ a b c d → a · (b · d) · (c · d)
+phoenix : Term ((b ⇒ c ⇒ d) ⇒ (a ⇒ b) ⇒ (a ⇒ c) ⇒ a ⇒ d)
+phoenix = term⁻ $ 4 # λ a b c d → a · (b · d) · (c · d)
 
--- liftM2 : ∀ {α β γ δ} {A : Set α} {B : Set β} {C : Set γ} {D : Set δ}
---        -> ((B -> C -> D) -> (A -> B) -> (A -> C) -> A -> D)
--- liftM2 = eval phoenix
+liftM2 : ∀ {α β γ δ} {A : Set α} {B : Set β} {C : Set γ} {D : Set δ}
+       -> ((B -> C -> D) -> (A -> B) -> (A -> C) -> A -> D)
+liftM2 = eval phoenix
 
 -- With the old version consumed ~550 MB and typechecked in several minutes on my slow machine.
 -- eaglebald : Term ((e ⇒ f ⇒ g) ⇒ (a ⇒ b ⇒ e) ⇒ a ⇒ b ⇒ (c ⇒ d ⇒ f) ⇒ c ⇒ d ⇒ g)
