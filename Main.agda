@@ -32,7 +32,7 @@ on-typed f e = runM e >>=⊤ f ∘ thicken ∘ core ∘ proj₂ ∘ proj₂
 typed = on-typed $ id
 term  = on-typed $ λ t {m Γ}   -> generalize {m} Γ t
 term⁻ = on-typed $ λ {n} t {Γ} -> generalize {n} Γ t
-normᵖ = on-typed $ pure ∘ erase ∘ norm
+pnorm = on-typed $ pure ∘ erase ∘ norm
 
 module Names {m} where
   name : ∀ n -> Type (suc n + m)

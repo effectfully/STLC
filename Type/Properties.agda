@@ -61,8 +61,9 @@ sub i σ = drec (const nothing)
                (λ c -> just ([ i / σ ] , right (sub-self i) (non-sub c)))
                (i ∈? ftv-all σ)
 
-thickenⱽ≢nothing : ∀ {n i} {σ : Type n} -> i ∈ᵗ σ -> thickenⱽ i σ ≢ nothing
-thickenⱽ≢nothing {σ = σ} v p with λ q -> lookup-for≢nothing (map swap (enumerate (ftv σ))) q p
-... | r rewrite sym (map-compose {g = proj₁} {swap} (enumerate (ftv σ)))
-              | map-cong {f = proj₁ ∘ swap} {proj₂} (λ{ (_ , _) -> refl }) (enumerate (ftv σ))
-              | enumerated (ftv σ) = r (∈ᵗ-ftv v)
+-- Needs eta.
+-- thickenⱽ≢nothing : ∀ {n i} {σ : Type n} -> i ∈ᵗ σ -> thickenⱽ i σ ≢ nothing
+-- thickenⱽ≢nothing {σ = σ} v p with λ q -> lookup-for≢nothing (map swap (enumerate (ftv σ))) q p
+-- ... | r rewrite sym (map-compose {g = proj₁} {swap} (enumerate (ftv σ)))
+--               | map-cong {f = proj₁ ∘ swap} {proj₂} (λ{ (_ , _) -> refl }) (enumerate (ftv σ))
+--               | enumerated (ftv σ) = r (∈ᵗ-ftv v)

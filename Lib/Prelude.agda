@@ -199,9 +199,8 @@ module _ where
   unsafeAssociate : ∀ {α β} {A : Set α} {B : Set β} {{_ : DecEq A}}
                       {C : (A -> B) -> Set β}
                   -> ∀ xs -> (∀ f -> C f) -> UnsafeAssociate xs C
-  unsafeAssociate  []      c = c undefined
-  unsafeAssociate (x ∷ xs) c = λ {y} ->
-    unsafeAssociate xs λ f -> c λ x' -> if x == x' then y else f x'
+  unsafeAssociate  []      c     = c undefined
+  unsafeAssociate (x ∷ xs) c {y} = unsafeAssociate xs λ f -> c λ x' -> if x == x' then y else f x'
 
 module Membership where
   infix 4 _∈_ _∉_
@@ -222,8 +221,8 @@ module Membership where
 
   associate : ∀ {α β} {A : Set α} {B : A -> Set β}
             -> ∀ xs -> {C : (∀ x -> x ∈ xs -> B x) -> Set β} -> (∀ f -> C f) -> Associate xs C
-  associate  []      c = c (λ _ ())
-  associate (x ∷ xs) c = λ {y} -> associate xs λ f -> c λ _ -> split-∈ f y
+  associate  []      c     = c (λ _ ())
+  associate (x ∷ xs) c {y} = associate xs λ f -> c λ _ -> split-∈ f y
 
   _∉_ : ∀ {α} {A : Set α} -> A -> List A -> Set α
   x ∉ xs = ¬ (x ∈ xs)

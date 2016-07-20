@@ -20,10 +20,10 @@ mutual
   ↑ {σ = σ ⇒ τ} f = λ x -> ↑ (wrap (unwrap f ·ⁿᵉ ↓ x))
 
   ↓ : ∀ {n} {σ : Type n} -> ⟦ σ ⟧ -> NF σ
-  ↓ {σ = Var i} n = neⁿᶠ (unwrap n)
-  ↓ {σ = σ ⇒ τ} f = λ {Γ} -> ƛⁿᶠ (↓ (f (↑ (wrap λ {Δ} -> varⁿᵉ (diff Δ Γ σ))))) where
+  ↓ {σ = Var i} n     = neⁿᶠ (unwrap n)
+  ↓ {σ = σ ⇒ τ} f {Γ} = ƛⁿᶠ (↓ (f (↑ (wrap λ {Δ} -> varⁿᵉ (diff Δ Γ σ))))) where
     diff : ∀ Δ Γ σ -> σ ∈ Δ
-    diff Δ Γ σ = drec ⊂[]-to-∈ impossible (Γ ⊂? Δ)  where
+    diff Δ Γ σ = drec ⊂[]-to-∈ impossible (Γ ⊂? Δ) where
       postulate impossible : _
 
 read : ∀ {n} {σ : Type n} -> ⟦ σ ⟧ -> Term σ

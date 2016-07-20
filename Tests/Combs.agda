@@ -7,7 +7,7 @@ I = pure $ 1 # λ x → x
 
 -- λ {.n} → ƛ var zero
 I' : Pure
-I' = normᵖ $ I · I
+I' = pnorm $ I · I
 
 ω : Pure
 ω = pure $ 1 # λ x → x · x
@@ -39,7 +39,7 @@ poly-app = eval $ read $ inst 2 λ A B -> mono-app {A} {B}
 applicator-speсialized : Term⁺ 3 (((b ⇒ c) ⇒ a) ⇒ (b ⇒ c) ⇒ a)
 applicator-speсialized = term $ 2 # λ a b → a · b
 
--- Why the hell this typechecks forever?
+-- Why the hell this type checks forever?
 -- applicator-generic : ∀ {a b} -> Term ((a ⇒ b) ⇒ a ⇒ b)
 -- applicator-generic = term⁻ $ 2 # λ a b → a · b
 
