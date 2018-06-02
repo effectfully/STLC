@@ -126,7 +126,7 @@ unify : ∀ {n} -> (σ τ : Type n) -> Maybe (∃ λ (Ψ : Subst n n) -> apply �
 
 It can be proved so using the techniques from [6].
 
-There are highly unsafe things in the [STLC.Experimental.Unsafe](src/STLC/Experimental/Unsafe.agda) module, but they are not used in the Algotihm M itself, only to define the `on-typed` and its derivatives presented above.
+There are highly unsafe things in the [STLC.Experimental.Unsafe](src/STLC/Experimental/Unsafe.agda) module, but they are not used in the Algotihm M itself, only to define `on-typed` and its derivatives presented above.
 
 ## References
 
