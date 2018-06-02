@@ -21,7 +21,7 @@ liftM2 = eval phoenixᵗ
 
 ## Overview
 
-This is simply typed lambda calculus with type variables in Agda. We have raw [Syntax](src/STLC/Core/Syntax.agda):
+This is simply typed lambda calculus with type variables in Agda. We have raw [Syntax](src/STLC/Term/Syntax.agda):
 
 ```
 data Syntax n : Set where
@@ -30,7 +30,7 @@ data Syntax n : Set where
   _·_ : Syntax n -> Syntax n -> Syntax n
 ```
 
-[typed terms](src/STLC/Core/Term.agda):
+[typed terms](src/STLC/Term/Core.agda):
 
 ```
 data _⊢_ {n} Γ : Type n -> Set where
