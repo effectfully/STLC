@@ -11,7 +11,7 @@ infixl 6 _·_
 
 data _∈_ {n} σ : Con n -> Set where
   vz  : ∀ {Γ}   -> σ ∈ Γ ▻ σ
-  vs_ : ∀ {Γ τ} -> σ ∈ Γ     -> σ ∈ Γ ▻ τ 
+  vs_ : ∀ {Γ τ} -> σ ∈ Γ     -> σ ∈ Γ ▻ τ
 
 data _⊢_ {n} Γ : Type n -> Set where
   var : ∀ {σ}   -> σ ∈ Γ     -> Γ ⊢ σ
@@ -77,34 +77,3 @@ specialize Ψ (f · x) = specialize Ψ f · specialize Ψ x
 
 widen : ∀ {n σ} {Γ : Con n} m -> Γ ⊢ σ -> _
 widen m = specialize (wkᵗ {m} ∘ Var)
-
-thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
-thicken {σ = σ} = specialize (thickenˢ σ)
-
-generalize : ∀ {m n} {σ : Type n}
-           -> (Γ : Con m) -> Term⁽⁾ σ -> UnsafeAssociate (ftv σ) λ (Ψ : Subst n m) -> Γ ⊢ apply Ψ σ
-generalize {σ = σ} _ t = unsafeAssociate (ftv σ) (wk ∘ flip specialize t)
-
--- thicken : ∀ {n σ} {Γ : Con n} -> Γ ⊢ σ -> _
--- thicken {σ = σ} = specialize (unsafeToSubst (thickenˢ σ))
-
--- generalize : ∀ {m n} {σ : Type n}
---            -> (Γ : Con m) -> Term⁽⁾ σ ->
---                  Associate (ftv σ) λ (Ψ : SubstInFtv σ m) ->
---                     Γ ⊢ apply (unsafeToSubst (fromInFtv σ Ψ)) σ
--- generalize {σ = σ} _ t = associate (ftv σ) λ Ψ -> wk (specialize (unsafeToSubst (fromInFtv σ Ψ)) t)
-
--- data SubstsIn {n} : Con n -> ℕ -> Set where
---   øˢ   : ∀ {m} -> SubstsIn ε m
---   _▷ˢ_ : ∀ {m Γ σ} -> SubstsIn Γ m -> SubstIn σ m -> SubstsIn (Γ ▻ σ) m
-
--- runSubstsIn : ∀ {n m} {Γ : Con n} -> SubstsIn Γ m -> Con m
--- runSubstsIn  øˢ      = ε
--- runSubstsIn (ρ ▷ˢ Ψ) = runSubstsIn ρ ▻ runSubstIn Ψ
-
--- Yeah.
--- specialize⁽⁾ : ∀ {n m σ} {Γ : Con n}
---              -> (ρ : SubstsIn Γ m) -> (Ψ : SubstIn σ m) -> Γ ⊢ σ -> runSubstsIn ρ ⊢ runSubstIn Ψ
--- specialize⁽⁾ ρ Ψ (var v) = {!!}
--- specialize⁽⁾ ρ Ψ (ƛ b)   = ƛ (specialize⁽⁾ (ρ ▷ˢ (Ψ ∘ vl)) (Ψ ∘ vr) b)
--- specialize⁽⁾ ρ Ψ (f · x) = specialize⁽⁾ ρ {!!} f · specialize⁽⁾ ρ {!!} x

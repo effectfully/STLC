@@ -2,7 +2,7 @@
 
 ## A quick taste
 
-Getting a universe polymorphic Agda function from a pure lambda term: 
+Getting a universe polymorphic Agda function from a pure lambda term:
 
 ```
 phoenix : Syntax⁽⁾
@@ -20,6 +20,8 @@ liftM2 = eval phoenixᵗ
   x (x₁ x₃) (x₂ x₃)`.
 
 ## Overview
+
+(links are broken)
 
 This is simply typed lambda calculus with type variables in Agda. We have raw [Syntax](https://github.com/effectfully/STLC-in-Agda/blob/master/Core/Syntax.agda):
 

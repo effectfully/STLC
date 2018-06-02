@@ -24,8 +24,8 @@ applicator⁺ = term $ 2 # λ a b → a · b
 applicator⁻ : Term ((b ⇒ a) ⇒ b ⇒ a)
 applicator⁻ = term⁻ $ 2 # λ a b → a · b
 
-_$′_ : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
-_$′_ = eval applicator⁻
+dollar : ∀ {α β} {A : Set α} {B : Set β} -> (A -> B) -> A -> B
+dollar = eval applicator⁻
 
 same-applicator : ∀ {n} {a b : Type n} -> Term ((a ⇒ b) ⇒ a ⇒ b)
 same-applicator = read _$′_

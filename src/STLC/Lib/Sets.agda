@@ -3,7 +3,7 @@ module STLC.Lib.Sets where
 open import Level as L
 open import Function
 open import Data.Unit.Base
-open import Data.Nat.Base
+open import Data.Nat.Base hiding (_^_)
 open import Data.Fin
 open import Data.Product hiding (map)
 open import Data.Vec
