@@ -16,7 +16,7 @@ open import STLC.M.Term using (core)
 module NF where
   open import STLC.M.Typecheck using (runM; typecheck)
 
-  -- If `e' is in NF.
+  -- If `e` is in NF.
   on-typed : ∀ {α} {A : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Set α}
            -> (f : ∀ {n} {σ : Type n} -> (t : Term⁽⁾ σ) -> A t) -> ∀ e -> _
   on-typed f e =

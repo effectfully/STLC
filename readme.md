@@ -99,6 +99,35 @@ gapp = generalize _ app
 
 `normᵖ` normalizes a pure lambda term whenever it's typeable. Uses NbE under the hood.
 
+## Unsafeties
+
+Two simple lemmas are used for for rewriting via the `REWRITE` pragma:
+
+```agda
+apply-apply : ∀ {n m p} {Φ : Subst m p} {Ψ : Subst n m} σ
+            -> apply Φ (apply Ψ σ) ≡ apply (Φ ∘ˢ Ψ) σ
+apply-apply (Var i) = refl
+apply-apply (σ ⇒ τ) = cong₂ _⇒_ (apply-apply σ) (apply-apply τ)
+
+mapᶜ-mapᶜ : ∀ {n m p l} {g : Type m -> Type p} {f : Type n -> Type m} (Γ : Con n l)
+          -> mapᶜ g (mapᶜ f Γ) ≡ mapᶜ (g ∘ f) Γ
+mapᶜ-mapᶜ  ε      = refl
+mapᶜ-mapᶜ (Γ ▻ σ) = cong (_▻ _) (mapᶜ-mapᶜ Γ)
+```
+
+In one of the previous version I avoided rewriting, but the code was unreadable.
+
+Unification is postulated to be `TERMINATING`:
+
+```agda
+{-# TERMINATING #-}
+unify : ∀ {n} -> (σ τ : Type n) -> Maybe (∃ λ (Ψ : Subst n n) -> apply Ψ σ ≡ apply Ψ τ)
+```
+
+It can be proved so using the techniques from [6].
+
+There are highly unsafe things in the [STLC.Experimental.Unsafe](src/STLC/Experimental/Unsafe.agda) module, but they are not used in the Algotihm M itself, only to define the `on-typed` and its derivatives presented above.
+
 ## References
 
 1. Martin Grabmüller. [Algorithm W Step by Step](https://github.com/wh5a/Algorithm-W-Step-By-Step)
@@ -106,3 +135,4 @@ gapp = generalize _ app
 3. Dr. Gergő Érdi. [Compositional Type Checking](http://gergo.erdi.hu/projects/tandoori/Tandoori-Compositional-Typeclass.pdf)
 4. Andreas Abel. [Normalization by Evaluation: Dependent Types and Impredicativity](http://www2.tcs.ifi.lmu.de/~abel/habil.pdf)
 5. Guillaume Allais. [Type and Scope Preserving Semantics](https://github.com/gallais/type-scope-semantics)
+6. Conor McBride. [First-Order Unification by Structural Recursion](http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=3E26A845A6124F33E00E24E3D1C6036C?doi=10.1.1.25.1516&rep=rep1&type=pdf)
