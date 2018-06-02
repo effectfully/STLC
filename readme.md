@@ -21,9 +21,7 @@ liftM2 = eval phoenixᵗ
 
 ## Overview
 
-(links are broken)
-
-This is simply typed lambda calculus with type variables in Agda. We have raw [Syntax](https://github.com/effectfully/STLC-in-Agda/blob/master/Core/Syntax.agda):
+This is simply typed lambda calculus with type variables in Agda. We have raw [Syntax](src/STLC/Core/Syntax.agda):
 
 ```
 data Syntax n : Set where
@@ -32,7 +30,7 @@ data Syntax n : Set where
   _·_ : Syntax n -> Syntax n -> Syntax n
 ```
 
-[typed terms](https://github.com/effectfully/STLC-in-Agda/blob/master/Core/Term.agda):
+[typed terms](src/STLC/Core/Term.agda):
 
 ```
 data _⊢_ {n} Γ : Type n -> Set where
@@ -41,7 +39,7 @@ data _⊢_ {n} Γ : Type n -> Set where
   _·_ : ∀ {σ τ} -> Γ ⊢ σ ⇒ τ -> Γ ⊢ σ     -> Γ ⊢ τ
 ```
 
-and [a mapping](https://github.com/effectfully/STLC-in-Agda/blob/master/M/Main.agda) from the former to the latter via a type-safe version of algorithm M:
+and [a mapping](src/STLC/M/Main.agda) from the former to the latter via a type-safe version of algorithm M:
 
 ```
 M : ∀ {n l} -> (Γ : Con n l) -> Syntax l -> (σ : Type n)
@@ -50,11 +48,11 @@ M : ∀ {n l} -> (Γ : Con n l) -> Syntax l -> (σ : Type n)
 
 `M` receives a context, a term and a type, and checks, whether there is a substitution that allows to typify the term in this context and with this type, after the substitution is applied to them. `M` uses rewrite rules under the hood — this simplifies the definition a lot.
 
-There is an [NbE](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Main.agda), which uses the traversal from [5].
+There is an [NbE](src/STLC/NbE/Main.agda), which uses the traversal from [5].
 
-There is [a part](https://github.com/effectfully/STLC-in-Agda/blob/master/NbE/Read.agda) of the liftable terms approach to NbE (described in [4]), which is used to coerce Agda's lambda terms to their first-order counterparts.
+There is [a part](src/STLC/NbE/Read.agda) of the liftable terms approach to NbE (described in [4]), which is used to coerce Agda's lambda terms to their first-order counterparts.
 
-There is [a universe polymorphic eval](https://github.com/effectfully/STLC-in-Agda/blob/master/Core/Eval.agda).
+There is [a universe polymorphic eval](src/STLC/Semantics/Eval.agda).
 
 Using all this we can, for example, make an Agda lambda term universe polymorphic:
 
@@ -70,7 +68,7 @@ poly-app = eval (read (inst 2 λ A B -> mono-app {A} {B}))
 
 I turned off the eta rule for products, because Agda lacks sharing. My Agda is out of date a bit, so I redefined `Σ` as a `data` instead of placing `{-# NO_ETA Σ #-}` somewhere. Algorithm M is still incredibly slow, and the current `_>>=ᵀ_` eats twice the memory comparing to the previous version, which was more performant, but less usable and inference-friendly, which is important because types signatures are quite verbose.
 
-The [Main](https://github.com/effectfully/STLC-in-Agda/blob/master/Main.agda) module contains
+The [Main](src/STLC/Main.agda) module contains
 
 ```
 on-typed : ∀ {α} {A : ∀ {n} {σ : Type n} -> Term⁽⁾ σ -> Set α}
